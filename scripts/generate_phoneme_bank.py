@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+# See also: gruut-ipa, ipasymbols, and, most importantly: panphon
 import ipapy
 
 for p in ipapy.IPA_CHARS:
@@ -14,7 +15,16 @@ for p in ipapy.IPA_CHARS:
 	elif p.is_consonant:
 		print(p)
 		print(p.voicing)
-		print(p.place)
 		print(p.manner)
+		print(p.place)
 		if p.modifiers:
 			print(" ".join(p.modifiers))
+	elif p.is_diacritic:
+		print(p)
+		print(p.name.replace(" diacritic", ""))
+	elif p.is_suprasegmental:
+		print(p)
+		print(p.name.replace(" suprasegmental", ""))
+	elif p.is_tone:
+		print(p)
+		print(p.name.replace(" tone", ""))
