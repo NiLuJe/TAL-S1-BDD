@@ -107,7 +107,7 @@ def insert_data(path: str|Path):
 						del(cols[langidx])
 						del(vals[langidx])
 					case _:
-						# Lookup LangID, as we use the name in our data to make data entry easier
+						# Lookup LangID, as we use the name and not the db's rowid in our data to make data entry easier
 						langname = row["LangID"]
 						langid = langs.get(langname)
 						if not langid:
