@@ -76,7 +76,7 @@ def insert_data(path: str|Path):
 				tables.append(row["name"])
 	except sqlite3.IntegrityError as e:
 			print(f"IntegrityError: {e}")
-	# Dedupe while keeping insertion order (no OrderedSet, so we rely on dicts retainign insertion order instead)...
+	# Dedupe while keeping insertion order (no OrderedSet, so we rely on dicts retaining insertion order instead)...
 	tables = list(dict.fromkeys(tables))
 
 	# Keep a cache of LangID mappings
@@ -102,7 +102,7 @@ def insert_data(path: str|Path):
 				# FIXME: PhonemeID lookup
 				match table:
 					case "LangInfo":
-						# Drop LangInfo, it's the primary key, and as such, empty in our data
+						# Drop LangID, it's the primary key/rowid, and as such, empty in our data
 						langidx = cols.index("LangID")
 						del(cols[langidx])
 						del(vals[langidx])
