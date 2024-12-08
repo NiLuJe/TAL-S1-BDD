@@ -30,3 +30,6 @@ def print_phoneme_bank():
 		elif p.is_tone:
 			print(p)
 			print(p.name.replace(" tone", ""))
+
+if __name__ == "__main__":
+	print_phoneme_bank()

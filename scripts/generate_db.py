@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 
+# See also: gruut-ipa, ipasymbols, and, most importantly: panphon
+import ipapy
 from pathlib import Path
 import sqlite3
 
 # Path shenanigans, relative to this script
 BASE_DIR = Path(__file__).parent.parent.resolve()
 DB_PATH = Path(BASE_DIR / "DB" / "conlangs.db")
-SCHEMA_PATH = Path(BASE_DIR / "data" / "conlangs_schema.sql")
+DATA_PATH = Path(BASE_DIR / "data")
+SCHEMA_PATH = Path(DATA_PATH / "conlangs_schema.sql")
 
 def create_db(path: str|Path):
+	"""Import bare SQL schema into a brand new DB"""
 	con = sqlite3.connect(path, autocommit=False)
 
 	with open(SCHEMA_PATH) as f:
@@ -21,12 +25,51 @@ def create_db(path: str|Path):
 	con.close()
 	print("Database created successfully!")
 
+def generate_ipa_bank(path: str|Path):
+	"""Insert IPA phones (from ipapy) into the PhonemeBank table"""
+	con = sqlite3.connect(path, autocommit=False)
+	con.row_factory = sqlite3.Row
+
+	try:
+		with con:
+			for p in ipapy.IPA_CHARS:
+				if p.is_vowel:
+					if p.modifiers:
+						modifs = " ".join(p.modifiers)
+					else:
+						modifs = None
+					data = (str(p), "Vowel", p.height, p.backness, p.roundness, modifs)
+					con.execute("INSERT INTO PhonemeBank(IPA, Type, Vowel_Height, Vowel_Backness, Vowel_Roundness, Modifiers) VALUES(?, ?, ?, ?, ?, ?)", data)
+				elif p.is_consonant:
+					if p.modifiers:
+						modifs = " ".join(p.modifiers)
+					else:
+						modifs = None
+					data = (str(p), "Consonant", 1 if p.voicing == "voiced" else 0, p.manner, p.place, modifs)
+					con.execute("INSERT INTO PhonemeBank(IPA, Type, Consonant_Voicing, Consonant_ArticulationManner, Consonant_ArticulationPlace, Modifiers) VALUES(?, ?, ?, ?, ?, ?)", data)
+				elif p.is_diacritic:
+					data = (str(p), "Diacritic", p.name.replace(" diacritic", ""))
+					con.execute("INSERT INTO PhonemeBank(IPA, Type, Modifiers) VALUES(?, ?, ?)", data)
+				elif p.is_suprasegmental:
+					data = (str(p), "Suprasegmental", p.name.replace(" suprasegmental", ""))
+					con.execute("INSERT INTO PhonemeBank(IPA, Type, Modifiers) VALUES(?, ?, ?)", data)
+				elif p.is_tone:
+					data = (str(p), "Tone", p.name.replace(" tone", ""))
+					con.execute("INSERT INTO PhonemeBank(IPA, Type, Modifiers) VALUES(?, ?, ?)", data)
+	except sqlite3.IntegrityError as e:
+			print(f"IntegrityError: {e}")
+
+	con.close()
+	print("Inserted phone data successfully!")
+
 def main():
 	while True:
-		action = input("[C]reate / [G]enerate >>> ")
+		action = input("[C]reate • [P]honeme • [G]enerate >>> ")
 		match action.strip().upper():
 			case "C":
 				create_db(DB_PATH)
+			case "P":
+				generate_ipa_bank(DB_PATH)
 			case "G":
 				print("NYI")
 			case "":
