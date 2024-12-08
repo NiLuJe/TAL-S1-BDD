@@ -116,6 +116,9 @@ def insert_data(path: str|Path):
 							res = con.execute("SELECT LangID FROM LangInfo WHERE LangName = ?", data)
 							row = res.fetchone()
 							langid = row["LangID"]
+							if not langid:
+								print()
+								raise ValueError(f"Unknown language {langname}!")
 						# Replace the lang name by its id
 						langidx = cols.index("LangID")
 						vals[langidx] = langid
