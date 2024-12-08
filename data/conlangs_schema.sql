@@ -67,12 +67,10 @@ CREATE TABLE Inspiration (
 	LangID INTEGER,
 	NaturalLanguage TEXT,
 	PhonologyFeature INTEGER,
-	ProsodyFeature INTEGER,
-	MorphoSyntaxFeature INTEGER,
+	ProsodyFeature TEXT,
+	MorphoSyntaxFeature TEXT,
 	CONSTRAINT Inspiration_PK PRIMARY KEY (ID),
 	CONSTRAINT Inspiration_LangInfo_FK FOREIGN KEY (LangID) REFERENCES LangInfo (LangID),
-	CONSTRAINT Inspiration_MorphoSyntax_FK FOREIGN KEY (MorphoSyntaxFeature) REFERENCES MorphoSyntax (ID),
-	CONSTRAINT Inspiration_Prosody_FK FOREIGN KEY (ProsodyFeature) REFERENCES Prosody (ID),
 	CONSTRAINT Inspiration_PhonemeFeature_FK FOREIGN KEY (PhonologyFeature) REFERENCES PhonemeFeature (ID)
 );
 
