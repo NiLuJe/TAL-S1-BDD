@@ -62,16 +62,33 @@ def generate_ipa_bank(path: str|Path):
 	con.close()
 	print("Inserted phone data successfully!")
 
+def insert_data(path: str|Path):
+	"""Import data from CSV files into the DB"""
+	con = sqlite3.connect(path, autocommit=False)
+	con.row_factory = sqlite3.Row
+
+	# Get table names
+	try:
+		with con:
+			for row in con.execute("SELECT name FROM sqlite_master WHERE type = ? ORDER BY name ASC", ("table", )):
+				print(row["name"])
+	except sqlite3.IntegrityError as e:
+			print(f"IntegrityError: {e}")
+	# Make sure LangInfo & PhonemeFeature are created first
+
+	con.close()
+	print("Inserted data successfully!")
+
 def main():
 	while True:
-		action = input("[C]reate • [P]honeme • [G]enerate >>> ")
+		action = input("[C]reate • [P]honeme • [I]nsert >>> ")
 		match action.strip().upper():
 			case "C":
 				create_db(DB_PATH)
 			case "P":
 				generate_ipa_bank(DB_PATH)
-			case "G":
-				print("NYI")
+			case "I":
+				insert_data(DB_PATH)
 			case "":
 				break
 			case _:
