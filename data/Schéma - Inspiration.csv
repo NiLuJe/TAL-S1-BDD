@@ -1,0 +1,7 @@
+ID,LangID,NaturalLanguage,PhonologyFeature,ProsodyFeature,MorphoSyntaxFeature
+,Na'vi,Georgien,Ejective,,
+,Na'vi,Allemand,,,CaseCount
+,Na'vi,Polynésien,VowelQuality,,
+,Dothraki,Turc,,,WordOrder
+,Quenya,Latin,,,CaseCount
+,Quenya,Finnois,Any,,

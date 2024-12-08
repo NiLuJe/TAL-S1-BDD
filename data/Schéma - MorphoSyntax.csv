@@ -1,0 +1,4 @@
+ID,LangID,WordOrder,PluralCount,CaseCount,AdjectiveBeforeNoun,AdjectiveAfterNoun,AdjectiveAgreement
+,Na'vi,SVO,0,4,,,
+,Dothraki,SOV,0,0,,,
+,Quenya,SVO,3,10,1,1,0
