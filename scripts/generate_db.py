@@ -80,10 +80,15 @@ def insert_data(path: str|Path):
 	# Dedupe while keeping insertion order (no OrderedSet, so we rely on dicts retainign insertion order instead)...
 	tables = list(dict.fromkeys(tables))
 
+	# Keep a cache of LangID mappings
+	langs = {}
+
 	for table in tables:
 		csv_file = Path(DATA_PATH / table ).with_suffix(".csv")
 		if not os.access(csv_file, os.R_OK):
 			print(f"No data for table {table}")
+			continue
+		if table != "LangInfo":
 			continue
 		print(f"Importing data from {csv_file}...")
 		with open(csv_file, newline='') as f:
@@ -91,7 +96,48 @@ def insert_data(path: str|Path):
 			f.seek(0)
 			reader = csv.DictReader(f, dialect=dialect)
 			for row in reader:
-				print(row.keys())
+				cols = list(row.keys())
+				vals = list(row.values())
+				match table:
+					case "LangInfo":
+						# Drop LangInfo, it's the primary key, and as such, empty in our data
+						langidx = cols.index("LangID")
+						del(cols[langidx])
+						del(vals[langidx])
+					case _:
+						# Lookup LangID, as we use the name in our data to make data entry easier
+						langname = row["LangID"]
+						langid = langs.get(langname)
+						if not langid:
+							print(f"Looking up LangID for {langname}... ", end = "")
+							data = (langname, )
+							row = con.execute("SELECT LangID FROM LangInfo WHERE LangName = ?", data)
+							langid = row["LangID"]
+						# Replace the lang name by its id
+						langidx = cols.index("LangID")
+						vals[langidx] = langid
+						# Cache it
+						langs[langname] = langid
+						# Log it
+						print(langid)
+
+				# Formatting for the prepared statement (column list)...
+				c = ", ".join(cols)
+				# Repeat comma-separated ? for as many columns as we have...
+				l = ["?" for i in range(len(vals))]
+				v = ", ".join(l)
+
+				query = f"INSERT INTO {table}({c}) VALUES({v})"
+				data = tuple(vals)
+				# Print the query for debugging purposes...
+				print(query)
+				print(data)
+
+				try:
+					with con:
+						con.execute(query, data)
+				except sqlite3.IntegrityError as e:
+						print(f"IntegrityError: {e}")
 
 	con.close()
 	print("Inserted data successfully!")
