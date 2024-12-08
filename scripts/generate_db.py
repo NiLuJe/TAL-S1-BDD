@@ -9,13 +9,17 @@ DB_PATH = Path(BASE_DIR / "DB" / "conlangs.db")
 SCHEMA_PATH = Path(BASE_DIR / "data" / "conlangs_schema.sql")
 
 def create_db(path: str|Path):
-	con = sqlite3.connect(path)
-	cur = con.cursor()
+	con = sqlite3.connect(path, autocommit=False)
 
 	with open(SCHEMA_PATH) as f:
-		cur.executescript(f.read())
+		try:
+			with con:
+				con.executescript(f.read())
+		except sqlite3.IntegrityError as e:
+				print(f"IntegrityError: {e}")
 
 	con.close()
+	print("Database created successfully!")
 
 def main():
 	while True:

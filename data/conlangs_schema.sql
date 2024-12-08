@@ -1,7 +1,5 @@
 PRAGMA foreign_keys = ON;
 
-BEGIN TRANSACTION;
-
 CREATE TABLE Phonology (
 	ID INTEGER NOT NULL,
 	LangID INTEGER,
@@ -107,5 +105,3 @@ CREATE UNIQUE INDEX PhonemeBank_PhonemeID_IDX ON PhonemeBank (PhonemeID);
 CREATE INDEX PhonemeBank_IPA_IDX ON PhonemeBank (IPA);
 
 CREATE INDEX PhonemeBank_Type_IDX ON PhonemeBank (Type);
-
-COMMIT;
