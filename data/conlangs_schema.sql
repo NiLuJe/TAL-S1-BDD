@@ -26,8 +26,8 @@ CREATE TABLE LangInfo (
 CREATE TABLE Prosody (
 	ID INTEGER NOT NULL,
 	LangID INTEGER,
-	PhonemicStress INTEGER DEFAULT (FALSE),
-	SyllableWeightStress INTEGER DEFAULT (TRUE),
+	PhonemicStress INTEGER NOT NULL DEFAULT (FALSE),
+	SyllableWeightStress INTEGER NOT NULL DEFAULT (TRUE),
 	CONSTRAINT Prosody_PK PRIMARY KEY (ID),
 	CONSTRAINT Prosody_LangInfo_FK FOREIGN KEY (LangID) REFERENCES LangInfo (LangID)
 );
@@ -80,19 +80,17 @@ CREATE TABLE PhonemeBank (
 	PhonemeID INTEGER NOT NULL,
 	IPA TEXT NOT NULL,
 	Type TEXT NOT NULL,
-	Vowel_Height TEXT NOT NULL,
-	Vowel_Backness TEXT NOT NULL,
-	Vowel_Roundness TEXT NOT NULL,
-	Consonant_Voicing INTEGER NOT NULL,
-	Consonant_ArticulationManner TEXT NOT NULL,
-	Consonant_ArticulationPlace TEXT NOT NULL,
+	Vowel_Height TEXT,
+	Vowel_Backness TEXT,
+	Vowel_Roundness TEXT,
+	Consonant_Voicing INTEGER,
+	Consonant_ArticulationManner TEXT,
+	Consonant_ArticulationPlace TEXT,
 	Modifiers TEXT,
 	Feature INTEGER,
 	CONSTRAINT PhonemeBank_PK PRIMARY KEY (PhonemeID),
 	CONSTRAINT PhonemeBank_PhonemeFeature_FK FOREIGN KEY (Feature) REFERENCES PhonemeFeature (ID)
 );
-
-DELETE FROM sqlite_sequence;
 
 CREATE UNIQUE INDEX Phonology_ID_IDX ON Phonology (ID);
 
