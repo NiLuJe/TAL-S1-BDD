@@ -83,7 +83,7 @@ def insert_data(path: str | Path):
 	langs = {}
 
 	for table in tables:
-		csv_file = Path(DATA_PATH / table ).with_suffix(".csv")
+		csv_file = Path(DATA_PATH / table).with_suffix(".csv")
 
 		if not os.access(csv_file, os.R_OK):
 			print(f"No data for table {table}")
