@@ -30,7 +30,6 @@ def create_db(path: str|Path):
 def generate_ipa_bank(path: str|Path):
 	"""Insert IPA phones (from ipapy) into the PhonemeBank table"""
 	con = sqlite3.connect(path, autocommit=False)
-	con.row_factory = sqlite3.Row
 
 	try:
 		with con:
@@ -85,19 +84,22 @@ def insert_data(path: str|Path):
 
 	for table in tables:
 		csv_file = Path(DATA_PATH / table ).with_suffix(".csv")
+
 		if not os.access(csv_file, os.R_OK):
 			print(f"No data for table {table}")
 			continue
-		if table != "LangInfo":
-			continue
+
 		print(f"Importing data from {csv_file}...")
-		with open(csv_file, newline='') as f:
+		with open(csv_file, newline = "") as f:
+			# Auto-detect CSV dialect
 			dialect = csv.Sniffer().sniff(f.read(1024))
 			f.seek(0)
-			reader = csv.DictReader(f, dialect=dialect)
+
+			reader = csv.DictReader(f, dialect = dialect)
 			for row in reader:
 				cols = list(row.keys())
 				vals = list(row.values())
+				# FIXME: PhonemeID lookup
 				match table:
 					case "LangInfo":
 						# Drop LangInfo, it's the primary key, and as such, empty in our data
