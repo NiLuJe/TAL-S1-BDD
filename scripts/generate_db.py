@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 # See also: gruut-ipa, ipasymbols, and, most importantly: panphon
+import csv
 import ipapy
+import os
 from pathlib import Path
 import sqlite3
 
@@ -67,14 +69,29 @@ def insert_data(path: str|Path):
 	con = sqlite3.connect(path, autocommit=False)
 	con.row_factory = sqlite3.Row
 
-	# Get table names
+	# Get table names... but we need LangInfo & PhonemeFeature to be handled first, because they host parent keys.
+	tables = [ "LangInfo", "PhonemeFeature" ]
 	try:
 		with con:
 			for row in con.execute("SELECT name FROM sqlite_master WHERE type = ? ORDER BY name ASC", ("table", )):
-				print(row["name"])
+				tables.append(row["name"])
 	except sqlite3.IntegrityError as e:
 			print(f"IntegrityError: {e}")
-	# Make sure LangInfo & PhonemeFeature are created first
+	# Dedupe while keeping insertion order (no OrderedSet, so we rely on dicts retainign insertion order instead)...
+	tables = list(dict.fromkeys(tables))
+
+	for table in tables:
+		csv_file = Path(DATA_PATH / table ).with_suffix(".csv")
+		if not os.access(csv_file, os.R_OK):
+			print(f"No data for table {table}")
+			continue
+		print(f"Importing data from {csv_file}...")
+		with open(csv_file, newline='') as f:
+			dialect = csv.Sniffer().sniff(f.read(1024))
+			f.seek(0)
+			reader = csv.DictReader(f, dialect=dialect)
+			for row in reader:
+				print(row.keys())
 
 	con.close()
 	print("Inserted data successfully!")
