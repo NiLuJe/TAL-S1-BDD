@@ -13,9 +13,9 @@ DB_PATH = Path(BASE_DIR / "DB" / "conlangs.db")
 DATA_PATH = Path(BASE_DIR / "data")
 SCHEMA_PATH = Path(DATA_PATH / "conlangs_schema.sql")
 
-def create_db(path: str|Path):
+def create_db(path: str | Path):
 	"""Import bare SQL schema into a brand new DB"""
-	con = sqlite3.connect(path, autocommit=False)
+	con = sqlite3.connect(path, autocommit = False)
 
 	with open(SCHEMA_PATH) as f:
 		try:
@@ -27,9 +27,9 @@ def create_db(path: str|Path):
 	con.close()
 	print("Database created successfully!")
 
-def generate_ipa_bank(path: str|Path):
+def generate_ipa_bank(path: str | Path):
 	"""Insert IPA phones (from ipapy) into the PhonemeBank table"""
-	con = sqlite3.connect(path, autocommit=False)
+	con = sqlite3.connect(path, autocommit = False)
 
 	try:
 		with con:
@@ -63,9 +63,9 @@ def generate_ipa_bank(path: str|Path):
 	con.close()
 	print("Inserted phone data successfully!")
 
-def insert_data(path: str|Path):
+def insert_data(path: str | Path):
 	"""Import data from CSV files into the DB"""
-	con = sqlite3.connect(path, autocommit=False)
+	con = sqlite3.connect(path, autocommit = False)
 	con.row_factory = sqlite3.Row
 
 	# Get table names... but we need LangInfo & PhonemeFeature to be handled first, because they host parent keys.
