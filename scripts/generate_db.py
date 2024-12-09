@@ -85,7 +85,11 @@ def lookup_lang_id(con: sqlite3.Connection, lang_name: str) -> int:
 	print()
 	raise ValueError(f"Unknown language {lang_name}!")
 
-def lookup_feat_id(con: sqlite3.Connection, feature_name: str) -> int:
+def lookup_feat_id(con: sqlite3.Connection, feature_name: str | None) -> int | None:
+	# NOTE: PhonemeFeature can be NULL...
+	if feature_name is None:
+		return None
+
 	print(f"Looking up PhonemeFeature for {feature_name}... ", end = "")
 	try:
 		with con:
