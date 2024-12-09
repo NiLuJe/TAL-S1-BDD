@@ -40,6 +40,7 @@ def generate_ipa_bank(path: str | Path):
 					else:
 						modifs = None
 					data = (str(p), "Vowel", p.height, p.backness, p.roundness, modifs)
+					print(data)
 					con.execute("INSERT INTO PhonemeBank(IPA, Type, Vowel_Height, Vowel_Backness, Vowel_Roundness, Modifiers) VALUES(?, ?, ?, ?, ?, ?)", data)
 				elif p.is_consonant:
 					if p.modifiers:
@@ -47,15 +48,19 @@ def generate_ipa_bank(path: str | Path):
 					else:
 						modifs = None
 					data = (str(p), "Consonant", 1 if p.voicing == "voiced" else 0, p.manner, p.place, modifs)
+					print(data)
 					con.execute("INSERT INTO PhonemeBank(IPA, Type, Consonant_Voicing, Consonant_ArticulationManner, Consonant_ArticulationPlace, Modifiers) VALUES(?, ?, ?, ?, ?, ?)", data)
 				elif p.is_diacritic:
 					data = (str(p), "Diacritic", p.name.replace(" diacritic", ""))
+					print(data)
 					con.execute("INSERT INTO PhonemeBank(IPA, Type, Modifiers) VALUES(?, ?, ?)", data)
 				elif p.is_suprasegmental:
 					data = (str(p), "Suprasegmental", p.name.replace(" suprasegmental", ""))
+					print(data)
 					con.execute("INSERT INTO PhonemeBank(IPA, Type, Modifiers) VALUES(?, ?, ?)", data)
 				elif p.is_tone:
 					data = (str(p), "Tone", p.name.replace(" tone", ""))
+					print(data)
 					con.execute("INSERT INTO PhonemeBank(IPA, Type, Modifiers) VALUES(?, ?, ?)", data)
 	except sqlite3.IntegrityError as e:
 			print(f"IntegrityError: {e}")
