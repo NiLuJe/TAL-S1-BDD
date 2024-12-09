@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 # See also: gruut-ipa, ipasymbols, and, most importantly: panphon
-import copy
 import csv
 import ipapy
 import os
@@ -120,8 +119,8 @@ def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 			row = res.fetchone()
 			if row is None:
 				# Fallback values for the new phoneme
-				right_row = { "Type": None, "Modifiers": None, "Feature": None }
-				left_row = { "Type": None, "Modifiers": None, "Feature": None }
+				right_row = { "Type": "Unknown", "Modifiers": None, "Feature": None }
+				left_row = { "Type": "Unknown", "Modifiers": None, "Feature": None }
 				type = "Unknown"
 				modifier = None
 				feature = None
@@ -132,17 +131,21 @@ def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 					# Try for trailing diacritics first
 					diacritic = phoneme[-1]
 					data = (diacritic, )
+					print(f"Looking up right {diacritic}...")
 					res = con.execute("SELECT PhonemeID, Type, Modifiers, Feature FROM PhonemeBank WHERE IPA = ?", data)
 					row = res.fetchone()
 					if row:
-						right_row = copy.copy(row)
+						right_row = dict(row)
+						print(f"right_row: {right_row}")
 
 						phone = phoneme[-2]
 						data = (phone, )
+						print(f"Looking up left {phone}...")
 						res = con.execute("SELECT PhonemeID, Type, Modifiers, Feature FROM PhonemeBank WHERE IPA = ?", data)
 						row = res.fetchone()
 						if row:
-							left_row = copy.copy(row)
+							left_row = dict(row)
+							print(f"left_row: {left_row}")
 
 					# Crappy heuristics...
 					match right_row["Type"]:
@@ -161,6 +164,8 @@ def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 										feature = lookup_feat_id(con, "Affricate")
 									elif phoneme[-2] == "n":
 										feature = lookup_feat_id(con, "Nasalized")
+								elif type == "Vowel":
+									feature = lookup_feat_id(con, "Diphthong")
 							else:
 								type = "Vowel"
 								feature = lookup_feat_id(con, "Diphthong")
