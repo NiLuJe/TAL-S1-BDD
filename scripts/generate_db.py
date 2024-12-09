@@ -87,7 +87,6 @@ def lookup_lang_id(con: sqlite3.Connection, lang_name: str) -> int:
 	raise ValueError(f"Unknown language {lang_name}!")
 
 def lookup_feat_id(con: sqlite3.Connection, feature_name: str) -> int | None:
-	print(f"{type(feature_name)}")
 	"""Lookup the ID of a given PhonemeFeature"""
 	# NOTE: PhonemeFeature can be NULL (i.e., the empty string in the CSV data)...
 	if not feature_name:
