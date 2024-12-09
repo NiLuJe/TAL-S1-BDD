@@ -102,6 +102,24 @@ def lookup_feat_id(con: sqlite3.Connection, feature_name: str) -> int:
 	print()
 	raise ValueError(f"Unknown feature {feature_name}!")
 
+def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
+	# FIXME: Insert missing phonemes into PhonemeBank
+	print(f"Looking up PhonemeID for {phoneme}... ", end = "")
+	try:
+		with con:
+			data = (phoneme, )
+			res = con.execute("SELECT PhonemeID FROM PhonemeBank WHERE IPA = ?", data)
+			row = res.fetchone()
+			phoneme_id = row["PhonemeID"]
+			# Log it
+			print(phoneme_id )
+			return phoneme_id
+	except sqlite3.IntegrityError as e:
+			print(f"IntegrityError: {e}")
+
+	print()
+	raise ValueError(f"Unknown phoneme {phoneme}!")
+
 def insert_data(path: str | Path):
 	"""Import data from CSV files into the DB"""
 	con = sqlite3.connect(path, autocommit = False)
@@ -139,7 +157,6 @@ def insert_data(path: str | Path):
 			# NOTE: We need to cast some magic in order to make data entry easier, which is why we can't use pandas' read_csv & to_sql methods...
 			reader = csv.DictReader(f, dialect = dialect)
 			for row in reader:
-				# FIXME: PhonemeID lookup
 				match table:
 					case "LangInfo":
 						# Drop LangID, it's the primary key/rowid, and as such, empty in our data
@@ -159,6 +176,16 @@ def insert_data(path: str | Path):
 								features[feature] = feat_id
 							# Replace the feature name by its id
 							row["PhonologyFeature"] = feat_id
+						elif table == "Phonology":
+							# Lookup PhonemeID
+							phoneme = row["PhonemeID"]
+							phoneme_id = phonemes.get(phoneme)
+							if not phoneme_id:
+								phoneme_id = lookup_phoneme_id(con, phoneme)
+								# Cache it
+								phonemes[phoneme] = phoneme_id
+							# Replace the feature name by its id
+							row["PhonemeID"] = phoneme_id
 
 						# Lookup LangID, as we use the name and not the db's rowid in our data to make data entry easier
 						lang_name = row["LangID"]
