@@ -68,22 +68,39 @@ def generate_ipa_bank(path: str | Path):
 	con.close()
 	print("Inserted phone data successfully!")
 
-def lookup_langid(con: sqlite3.Connection, langname: str) -> int:
-	print(f"Looking up LangID for {langname}... ", end = "")
+def lookup_lang_id(con: sqlite3.Connection, lang_name: str) -> int:
+	print(f"Looking up LangID for {lang_name}... ", end = "")
 	try:
 		with con:
-			data = (langname, )
+			data = (lang_name, )
 			res = con.execute("SELECT LangID FROM LangInfo WHERE LangName = ?", data)
 			row = res.fetchone()
-			langid = row["LangID"]
+			lang_id = row["LangID"]
 			# Log it
-			print(langid)
-			return langid
+			print(lang_id)
+			return lang_id
 	except sqlite3.IntegrityError as e:
 			print(f"IntegrityError: {e}")
 
 	print()
-	raise ValueError(f"Unknown language {langname}!")
+	raise ValueError(f"Unknown language {lang_name}!")
+
+def lookup_feat_id(con: sqlite3.Connection, feature_name: str) -> int:
+	print(f"Looking up PhonemeFeature for {feature_name}... ", end = "")
+	try:
+		with con:
+			data = (feature_name, )
+			res = con.execute("SELECT ID FROM PhonemeFeature WHERE Name = ?", data)
+			row = res.fetchone()
+			feature_id = row["ID"]
+			# Log it
+			print(feature_id )
+			return feature_id
+	except sqlite3.IntegrityError as e:
+			print(f"IntegrityError: {e}")
+
+	print()
+	raise ValueError(f"Unknown feature {feature_name}!")
 
 def insert_data(path: str | Path):
 	"""Import data from CSV files into the DB"""
@@ -101,8 +118,10 @@ def insert_data(path: str | Path):
 	# Dedupe while keeping insertion order (no OrderedSet, so we rely on dicts retaining insertion order instead)...
 	tables = list(dict.fromkeys(tables))
 
-	# Keep a cache of LangID mappings
+	# Keep a cache of foreign key mappings
 	langs = {}
+	phonemes = {}
+	features = {}
 
 	for table in tables:
 		csv_file = Path(DATA_PATH / table).with_suffix(".csv")
@@ -129,15 +148,27 @@ def insert_data(path: str | Path):
 						# Drop rowid (if any)
 						row.pop("ID", None)
 
+						# Can't do fall-through in Python, so we branch again for table-specific shenanigans...
+						if table == "Inspiration":
+							# Lookup PhonologyFeature
+							feature = row["PhonologyFeature"]
+							feat_id = features.get(feature)
+							if not feat_id:
+								feat_id = lookup_feat_id(con, feature)
+								# Cache it
+								features[feature] = feat_id
+							# Replace the feature name by its id
+							row["PhonologyFeature"] = feat_id
+
 						# Lookup LangID, as we use the name and not the db's rowid in our data to make data entry easier
-						langname = row["LangID"]
-						langid = langs.get(langname)
-						if not langid:
-							langid = lookup_langid(con, langname)
+						lang_name = row["LangID"]
+						lang_id = langs.get(lang_name)
+						if not lang_id:
+							lang_id = lookup_lang_id(con, lang_name)
 							# Cache it
-							langs[langname] = langid
+							langs[lang_name] = lang_id
 						# Replace the lang name by its id
-						row["LangID"] = langid
+						row["LangID"] = lang_id
 
 				# Formatting for the prepared statement (column list)...
 				columns = ", ".join(row.keys())
