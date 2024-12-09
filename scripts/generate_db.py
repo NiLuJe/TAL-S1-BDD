@@ -108,6 +108,12 @@ def insert_data(path: str | Path):
 						del(cols[langidx])
 						del(vals[langidx])
 					case _:
+						# Drop rowid
+						rowid = cols.index("ID")
+						if rowid:
+							del(cols[rowid])
+							del(vals[rowid])
+
 						# Lookup LangID, as we use the name and not the db's rowid in our data to make data entry easier
 						langname = row["LangID"]
 						langid = langs.get(langname)
