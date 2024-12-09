@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 # See also: gruut-ipa, ipasymbols, and, most importantly: panphon
+import copy
 import csv
 import ipapy
 import os
@@ -134,14 +135,14 @@ def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 					res = con.execute("SELECT PhonemeID, Type, Modifiers, Feature FROM PhonemeBank WHERE IPA = ?", data)
 					row = res.fetchone()
 					if row:
-						right_row = row.copy()
+						right_row = copy.copy(row)
 
 						phone = phoneme[-2]
 						data = (phone, )
 						res = con.execute("SELECT PhonemeID, Type, Modifiers, Feature FROM PhonemeBank WHERE IPA = ?", data)
 						row = res.fetchone()
 						if row:
-							left_row = row.copy()
+							left_row = copy.copy(row)
 
 					# Crappy heuristics...
 					match right_row["Type"]:
