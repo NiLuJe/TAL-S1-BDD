@@ -135,12 +135,12 @@ def insert_data(path: str | Path):
 						row["LangID"] = langid
 
 				# Formatting for the prepared statement (column list)...
-				c = ", ".join(row.keys())
+				columns = ", ".join(row.keys())
 				# Repeat comma-separated ? for as many columns as we have...
-				l = ["?" for i in range(len(row))]
-				v = ", ".join(l)
+				qmarks = ["?" for i in range(len(row))]
+				val_placeholders = ", ".join(qmarks)
 
-				query = f"INSERT INTO {table}({c}) VALUES({v})"
+				query = f"INSERT INTO {table}({columns}) VALUES({val_placeholders})"
 				data = tuple(row.values())
 				# Print the query for debugging purposes...
 				print(query)
