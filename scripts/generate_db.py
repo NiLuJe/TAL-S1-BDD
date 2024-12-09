@@ -239,15 +239,16 @@ def insert_data(path: str | Path):
 							# Replace the feature name by its id
 							row["PhonemeID"] = phoneme_id
 
-						# Lookup LangID, as we use the name and not the db's rowid in our data to make data entry easier
-						lang_name = row["LangID"]
-						lang_id = langs.get(lang_name)
-						if not lang_id:
-							lang_id = lookup_lang_id(con, lang_name)
-							# Cache it
-							langs[lang_name] = lang_id
-						# Replace the lang name by its id
-						row["LangID"] = lang_id
+						# Lookup LangID (if any), as we use the name and not the db's rowid in our data to make data entry easier
+						lang_name = row.get("LangID")
+						if lang_name:
+							lang_id = langs.get(lang_name)
+							if not lang_id:
+								lang_id = lookup_lang_id(con, lang_name)
+								# Cache it
+								langs[lang_name] = lang_id
+							# Replace the lang name by its id
+							row["LangID"] = lang_id
 
 				# Formatting for the prepared statement (column list)...
 				columns = ", ".join(row.keys())
