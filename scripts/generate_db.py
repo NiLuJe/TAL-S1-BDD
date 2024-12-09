@@ -95,6 +95,7 @@ def insert_data(path: str | Path):
 			dialect = csv.Sniffer().sniff(f.read(1024))
 			f.seek(0)
 
+			# NOTE: We need to cast some magic in order to make data entry easier, which is why we can't use pandas' read_csv & to_sql methods...
 			reader = csv.DictReader(f, dialect = dialect)
 			for row in reader:
 				cols = list(row.keys())
