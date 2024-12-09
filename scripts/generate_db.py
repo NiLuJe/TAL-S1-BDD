@@ -69,6 +69,7 @@ def generate_ipa_bank(path: str | Path):
 	print("Inserted phone data successfully!")
 
 def lookup_lang_id(con: sqlite3.Connection, lang_name: str) -> int:
+	"""Lookup the LangID of a given lang"""
 	print(f"Looking up LangID for {lang_name}... ", end = "")
 	try:
 		with con:
@@ -86,6 +87,7 @@ def lookup_lang_id(con: sqlite3.Connection, lang_name: str) -> int:
 	raise ValueError(f"Unknown language {lang_name}!")
 
 def lookup_feat_id(con: sqlite3.Connection, feature_name: str | None) -> int | None:
+	"""Lookup the ID of a given PhonemeFeature"""
 	# NOTE: PhonemeFeature can be NULL...
 	if feature_name is None:
 		return None
@@ -107,6 +109,7 @@ def lookup_feat_id(con: sqlite3.Connection, feature_name: str | None) -> int | N
 	raise ValueError(f"Unknown feature {feature_name}!")
 
 def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
+	"""Lookup the PhonemeID of a given IPA string"""
 	print(f"Looking up PhonemeID for {phoneme}... ")
 	try:
 		with con:
@@ -276,6 +279,7 @@ def insert_data(path: str | Path):
 	print("Inserted data successfully!")
 
 def main():
+	"""Main entry point"""
 	while True:
 		action = input("[C]reate • [P]honeme • [I]nsert >>> ")
 		match action.strip().upper():
