@@ -115,21 +115,14 @@ def insert_data(path: str | Path):
 			# NOTE: We need to cast some magic in order to make data entry easier, which is why we can't use pandas' read_csv & to_sql methods...
 			reader = csv.DictReader(f, dialect = dialect)
 			for row in reader:
-				cols = list(row.keys())
-				vals = list(row.values())
 				# FIXME: PhonemeID lookup
 				match table:
 					case "LangInfo":
 						# Drop LangID, it's the primary key/rowid, and as such, empty in our data
-						langidx = cols.index("LangID")
-						del(cols[langidx])
-						del(vals[langidx])
+						del(row["LangID"])
 					case _:
-						# Drop rowid
-						rowid = cols.index("ID")
-						if rowid:
-							del(cols[rowid])
-							del(vals[rowid])
+						# Drop rowid (if any)
+						row.pop("ID", None)
 
 						# Lookup LangID, as we use the name and not the db's rowid in our data to make data entry easier
 						langname = row["LangID"]
@@ -139,17 +132,16 @@ def insert_data(path: str | Path):
 							# Cache it
 							langs[langname] = langid
 						# Replace the lang name by its id
-						langidx = cols.index("LangID")
-						vals[langidx] = langid
+						row["LangID"] = langid
 
 				# Formatting for the prepared statement (column list)...
-				c = ", ".join(cols)
+				c = ", ".join(row.keys())
 				# Repeat comma-separated ? for as many columns as we have...
-				l = ["?" for i in range(len(vals))]
+				l = ["?" for i in range(len(row))]
 				v = ", ".join(l)
 
 				query = f"INSERT INTO {table}({c}) VALUES({v})"
-				data = tuple(vals)
+				data = tuple(row.values())
 				# Print the query for debugging purposes...
 				print(query)
 				print(data)
