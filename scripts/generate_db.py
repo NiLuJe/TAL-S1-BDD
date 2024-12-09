@@ -112,11 +112,14 @@ def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 			row = res.fetchone()
 			if row is None:
 				# Fallback values for the new phoneme
+				right_type = None
+				left_type = None
 				type = "Unknown"
 				modifier = None
 				feature = None
+
 				# Grok the feature automagically
-				# NOTE: we'll mostly assule diphones here, or phone + diacritic pairs
+				# NOTE: we'll mostly assume diphones here, or phone + diacritic pairs
 				if len(phoneme) > 1:
 					# Try for trailing diacritics first
 					diacritic = phoneme[-1]
@@ -125,19 +128,34 @@ def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 					row = res.fetchone()
 					if row:
 						right_type = row["Type"]
-						if row["Type"] == "Tone" or row["Type"] == "Suprasegmental" or row["Type"] == "Diacritic":
+
+						phone = phoneme[-2]
+						data = (phone, )
+						res = con.execute("SELECT PhonemeID, Type, Modifiers, Feature FROM PhonemeBank WHERE IPA = ?", data)
+						row = res.fetchone()
+						if row:
+							left_type = row["Type"]
+
+					# Crappy heuristics...
+					match right_type:
+						case "Tone" | "Suprasegmental" | "Diacritic":
 							# Inherit the diacritic's type & feature
 							modifier = row["Modifiers"]
 							feature = row["Feature"]
-
-							# Inherit the previous phone's type
-							phone = phoneme[-2]
-							data = (phone, )
-							res = con.execute("SELECT PhonemeID, Type, Modifiers, Feature FROM PhonemeBank WHERE IPA = ?", data)
-							row = res.fetchone()
-							if row:
-								left_type = row["Type"]
-								type = row["Type"]
+							# Inherit the phone's type
+							type = left_type
+						case _:
+							if left_type == right_type:
+								type = left_type
+								# Handle Nasalized & Affricates
+								if type == "Consonant":
+									if phoneme[-2] == "t":
+										feature = lookup_feat_id(con, "Affricate")
+									elif phoneme[-2] == "n":
+										feature = lookup_feat_id(con, "Nasalized")
+							else:
+								type = "Vowel"
+								feature = lookup_feat_id(con, "Diphthong")
 
 				data = (phoneme, type, modifier, feature)
 				con.execute("INSERT INTO PhonemeBank(IPA, Type, Modifiers, Feature) VALUES(?, ?)")
