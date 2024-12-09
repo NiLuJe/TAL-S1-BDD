@@ -63,6 +63,23 @@ def generate_ipa_bank(path: str | Path):
 	con.close()
 	print("Inserted phone data successfully!")
 
+def lookup_langid(con: sqlite3.Connection, langname: str) -> int:
+	print(f"Looking up LangID for {langname}... ", end = "")
+	try:
+		with con:
+			data = (langname, )
+			res = con.execute("SELECT LangID FROM LangInfo WHERE LangName = ?", data)
+			row = res.fetchone()
+			langid = row["LangID"]
+			# Log it
+			print(langid)
+			return langid
+	except sqlite3.IntegrityError as e:
+			print(f"IntegrityError: {e}")
+
+	print()
+	raise ValueError(f"Unknown language {langname}!")
+
 def insert_data(path: str | Path):
 	"""Import data from CSV files into the DB"""
 	con = sqlite3.connect(path, autocommit = False)
@@ -118,21 +135,12 @@ def insert_data(path: str | Path):
 						langname = row["LangID"]
 						langid = langs.get(langname)
 						if not langid:
-							print(f"Looking up LangID for {langname}... ", end = "")
-							data = (langname, )
-							res = con.execute("SELECT LangID FROM LangInfo WHERE LangName = ?", data)
-							row = res.fetchone()
-							langid = row["LangID"]
-							if not langid:
-								print()
-								raise ValueError(f"Unknown language {langname}!")
+							langid = lookup_langid(con, langname)
+							# Cache it
+							langs[langname] = langid
 						# Replace the lang name by its id
 						langidx = cols.index("LangID")
 						vals[langidx] = langid
-						# Cache it
-						langs[langname] = langid
-						# Log it
-						print(langid)
 
 				# Formatting for the prepared statement (column list)...
 				c = ", ".join(cols)
