@@ -104,15 +104,50 @@ def lookup_feat_id(con: sqlite3.Connection, feature_name: str) -> int:
 
 def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 	# FIXME: Insert missing phonemes into PhonemeBank
-	print(f"Looking up PhonemeID for {phoneme}... ", end = "")
+	print(f"Looking up PhonemeID for {phoneme}... ")
 	try:
 		with con:
 			data = (phoneme, )
 			res = con.execute("SELECT PhonemeID FROM PhonemeBank WHERE IPA = ?", data)
 			row = res.fetchone()
+			if row is None:
+				# Fallback values for the new phoneme
+				type = "Unknown"
+				modifier = None
+				feature = None
+				# Grok the feature automagically
+				# NOTE: we'll mostly assule diphones here, or phone + diacritic pairs
+				if len(phoneme) > 1:
+					# Try for trailing diacritics first
+					diacritic = phoneme[-1]
+					data = (diacritic, )
+					res = con.execute("SELECT PhonemeID, Type, Modifiers, Feature FROM PhonemeBank WHERE IPA = ?", data)
+					row = res.fetchone()
+					if row:
+						right_type = row["Type"]
+						if row["Type"] == "Tone" or row["Type"] == "Suprasegmental" or row["Type"] == "Diacritic":
+							# Inherit the diacritic's type & feature
+							modifier = row["Modifiers"]
+							feature = row["Feature"]
+
+							# Inherit the previous phone's type
+							phone = phoneme[-2]
+							data = (phone, )
+							res = con.execute("SELECT PhonemeID, Type, Modifiers, Feature FROM PhonemeBank WHERE IPA = ?", data)
+							row = res.fetchone()
+							if row:
+								left_type = row["Type"]
+								type = row["Type"]
+
+				data = (phoneme, type, modifier, feature)
+				con.execute("INSERT INTO PhonemeBank(IPA, Type, Modifiers, Feature) VALUES(?, ?)")
+				print(f"Inserting new phoneme into PhonemBank: {data}")
+
+				res = con.execute("SELECT PhonemeID FROM PhonemeBank WHERE IPA = ?", data)
+				row = res.fetchone()
 			phoneme_id = row["PhonemeID"]
 			# Log it
-			print(phoneme_id )
+			print(f"{phoneme} is @ rowid {phoneme_id}")
 			return phoneme_id
 	except sqlite3.IntegrityError as e:
 			print(f"IntegrityError: {e}")
