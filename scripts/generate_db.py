@@ -165,8 +165,8 @@ def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 								feature = lookup_feat_id(con, "Diphthong")
 
 				data = (phoneme, type, modifier, feature)
-				con.execute("INSERT INTO PhonemeBank(IPA, Type, Modifiers, Feature) VALUES(?, ?)")
-				print(f"Inserting new phoneme into PhonemBank: {data}")
+				print(f"Inserting new phoneme into PhonemeBank: {data}")
+				con.execute("INSERT INTO PhonemeBank(IPA, Type, Modifiers, Feature) VALUES(?, ?, ?, ?)")
 
 				res = con.execute("SELECT PhonemeID FROM PhonemeBank WHERE IPA = ?", data)
 				row = res.fetchone()
