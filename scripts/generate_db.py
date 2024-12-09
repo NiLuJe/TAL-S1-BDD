@@ -103,7 +103,6 @@ def lookup_feat_id(con: sqlite3.Connection, feature_name: str) -> int:
 	raise ValueError(f"Unknown feature {feature_name}!")
 
 def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
-	# FIXME: Insert missing phonemes into PhonemeBank
 	print(f"Looking up PhonemeID for {phoneme}... ")
 	try:
 		with con:
@@ -112,8 +111,8 @@ def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 			row = res.fetchone()
 			if row is None:
 				# Fallback values for the new phoneme
-				right_type = None
-				left_type = None
+				right_row = { "Type": None, "Modifiers": None, "Feature": None }
+				left_row = { "Type": None, "Modifiers": None, "Feature": None }
 				type = "Unknown"
 				modifier = None
 				feature = None
@@ -127,26 +126,26 @@ def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 					res = con.execute("SELECT PhonemeID, Type, Modifiers, Feature FROM PhonemeBank WHERE IPA = ?", data)
 					row = res.fetchone()
 					if row:
-						right_type = row["Type"]
+						right_row = row.copy()
 
 						phone = phoneme[-2]
 						data = (phone, )
 						res = con.execute("SELECT PhonemeID, Type, Modifiers, Feature FROM PhonemeBank WHERE IPA = ?", data)
 						row = res.fetchone()
 						if row:
-							left_type = row["Type"]
+							left_row = row.copy()
 
 					# Crappy heuristics...
-					match right_type:
+					match right_row["Type"]:
 						case "Tone" | "Suprasegmental" | "Diacritic":
-							# Inherit the diacritic's type & feature
-							modifier = row["Modifiers"]
-							feature = row["Feature"]
+							# Inherit the diacritic's modifiers & feature
+							modifier = right_row["Modifiers"]
+							feature = right_row["Feature"]
 							# Inherit the phone's type
-							type = left_type
+							type = left_row["Type"]
 						case _:
-							if left_type == right_type:
-								type = left_type
+							if left_row["Type"] == right_row["Type"]:
+								type = left_row["Type"]
 								# Handle Nasalized & Affricates
 								if type == "Consonant":
 									if phoneme[-2] == "t":
