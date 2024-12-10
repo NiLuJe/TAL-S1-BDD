@@ -118,7 +118,7 @@ def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 			res = con.execute("SELECT PhonemeID FROM PhonemeBank WHERE IPA = ?", data)
 			row = res.fetchone()
 			if row is None:
-				# Fallback values for the new phoneme
+				# Fallback values for the new phoneme row
 				right_row = { "Type": "Unknown", "Modifiers": None, "Feature": None }
 				left_row = { "Type": "Unknown", "Modifiers": None, "Feature": None }
 				type = "Unknown"
