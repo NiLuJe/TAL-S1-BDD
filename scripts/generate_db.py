@@ -6,6 +6,7 @@ import ipapy
 import os
 from pathlib import Path
 import sqlite3
+import unicodedata
 
 # Path shenanigans, relative to this script
 BASE_DIR = Path(__file__).parent.parent.resolve()
@@ -125,10 +126,12 @@ def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 				feature = None
 
 				# Grok the feature automagically
+				# NOTE: Decompose to NFD to be able to lookup diacritics on their own...
+				nfd_phoneme = unicodedata.normalize("NFD", phoneme)
 				# NOTE: we'll mostly assume diphones here, or phone + diacritic pairs
-				if len(phoneme) > 1:
+				if len(nfd_phoneme) > 1:
 					# Try for trailing diacritics first
-					diacritic = phoneme[-1]
+					diacritic = nfd_phoneme[-1]
 					data = (diacritic, )
 					print(f"Looking up right {diacritic}...")
 					res = con.execute("SELECT PhonemeID, Type, Modifiers, Feature FROM PhonemeBank WHERE IPA = ?", data)
@@ -137,7 +140,7 @@ def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 						right_row = dict(row)
 						print(f"right_row: {right_row}")
 
-						phone = phoneme[-2]
+						phone = nfd_phoneme[-2]
 						data = (phone, )
 						print(f"Looking up left {phone}...")
 						res = con.execute("SELECT PhonemeID, Type, Modifiers, Feature FROM PhonemeBank WHERE IPA = ?", data)
@@ -159,9 +162,9 @@ def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 								type = left_row["Type"]
 								# Handle Nasalized & Affricates
 								if type == "Consonant":
-									if phoneme[-2] == "t":
+									if nfd_phoneme[-2] == "t":
 										feature = lookup_feat_id(con, "Affricate")
-									elif phoneme[-2] == "n":
+									elif nfd_phoneme[-2] == "n":
 										feature = lookup_feat_id(con, "Nasalized")
 								elif type == "Vowel":
 									feature = lookup_feat_id(con, "Diphthong")
