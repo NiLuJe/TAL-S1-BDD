@@ -285,6 +285,8 @@ def insert_data(path: str | Path):
 				except sqlite3.IntegrityError as e:
 						print(f"IntegrityError: {e}")
 
+	# FIXME: Associate ArticulationManner w/ a PhonemeFeature (e.g., ejective, plosive, fricative...).
+	#        At the very least ejective just so our request works ;p.
 	con.close()
 	print("Inserted data successfully!")
 
