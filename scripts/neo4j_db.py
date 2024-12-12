@@ -38,7 +38,7 @@ MERGE (f:PhonemeFeature {Name: row.Name});
 # MorphoSyntax
 """
 CREATE CONSTRAINT MorphoSyntax_WordOrder IF NOT EXISTS
-FOR (wo:WordOrder) REQUIRE ms.Order IS UNIQUE;
+FOR (wo:WordOrder) REQUIRE wo.Order IS UNIQUE;
 CREATE CONSTRAINT MorphoSyntax_PluralCount IF NOT EXISTS
 FOR (pc:PluralCount) REQUIRE pc.Count IS UNIQUE;
 CREATE CONSTRAINT MorphoSyntax_CaseCount IF NOT EXISTS
@@ -51,32 +51,33 @@ CREATE CONSTRAINT MorphoSyntax_AdjectiveAgreement IF NOT EXISTS
 FOR (aa:AdjectiveAgreement) REQUIRE aa.Value IS UNIQUE;
 
 LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/MorphoSyntax.csv" AS row
-MERGE (wo:WordOrder {Order: row.WordOrder})
-MERGE (pc:PluralCount {Count: toInteger(row.PluralCount)})
-MERGE (cc:CaseCount {Count: toInteger(row.CaseCount)})
-MERGE (abn:AdjectiveBeforeNoun {Value: toBoolean(row.AdjectiveBeforeNoun)})
-MERGE (aan:AdjectiveAfterNoun {Value: toBoolean(row.AdjectiveAfterNoun)})
-MERGE (aa:AdjectiveAgreement {Value: toBoolean(row.AdjectiveAgreement)})
+MERGE (wo:WordOrder {Order: row.WordOrder}),
+	  (pc:PluralCount {Count: toInteger(row.PluralCount)}),
+	  (cc:CaseCount {Count: toInteger(row.CaseCount)}),
+	  (abn:AdjectiveBeforeNoun {Value: toBoolean(row.AdjectiveBeforeNoun)}),
+	  (aan:AdjectiveAfterNoun {Value: toBoolean(row.AdjectiveAfterNoun)}),
+	  (aa:AdjectiveAgreement {Value: toBoolean(row.AdjectiveAgreement)})
 
-MATCH (l:LangInfo {Name: row.LangID})
-MATCH (wo:WordOrder {Order: row.WordOrder})
-MATCH (pc:PluralCount {Count: toInteger(row.PluralCount)})
-MATCH (cc:CaseCount {Count: toInteger(row.CaseCount)})
-MATCH (abn:AdjectiveBeforeNoun {Value: toBoolean(row.AdjectiveBeforeNoun)})
-MATCH (aan:AdjectiveAfterNoun {Value: toBoolean(row.AdjectiveAfterNoun)})
-MATCH (aa:AdjectiveAgreement {Value: toBoolean(row.AdjectiveAgreement)})
+MATCH (l:LangInfo {Name: row.LangID}),
+	  (wo:WordOrder {Order: row.WordOrder}),
+	  (pc:PluralCount {Count: toInteger(row.PluralCount)}),
+	  (cc:CaseCount {Count: toInteger(row.CaseCount)}),
+	  (abn:AdjectiveBeforeNoun {Value: toBoolean(row.AdjectiveBeforeNoun)}),
+	  (aan:AdjectiveAfterNoun {Value: toBoolean(row.AdjectiveAfterNoun)}),
+	  (aa:AdjectiveAgreement {Value: toBoolean(row.AdjectiveAgreement)})
+
 MERGE (l)-[r:WORD_ORDER]->(wo)
 SET r.type = "MorphoSyntax"
-MERGE (l)-[r:PLURAL_COUNT]->(pc)
-SET r.type = "MorphoSyntax"
-MERGE (l)-[r:CASE_COUNT]->(cc)
-SET r.type = "MorphoSyntax"
-MERGE (l)-[r:ADJ_BEFORE_NOUN]->(abn)
-SET r.type = "MorphoSyntax"
-MERGE (l)-[r:ADJ_AFTER_NOUN]->(aan)
-SET r.type = "MorphoSyntax"
-MERGE (l)-[r:ADJ_AGREEMENT]->(aa)
-SET r.type = "MorphoSyntax";
+MERGE (l)-[r2:PLURAL_COUNT]->(pc)
+SET r2.type = "MorphoSyntax"
+MERGE (l)-[r3:CASE_COUNT]->(cc)
+SET r3.type = "MorphoSyntax"
+MERGE (l)-[r4:ADJ_BEFORE_NOUN]->(abn)
+SET r4.type = "MorphoSyntax"
+MERGE (l)-[r5:ADJ_AFTER_NOUN]->(aan)
+SET r5.type = "MorphoSyntax"
+MERGE (l)-[r6:ADJ_AGREEMENT]->(aa)
+SET r6.type = "MorphoSyntax";
 """
 
 def main():
