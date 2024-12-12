@@ -104,6 +104,26 @@ MERGE (nw)-[r4:IN_IPA]->(ipaw)
 SET r4.type = "Lexicon";
 """
 
+# Prosody
+"""
+CREATE CONSTRAINT Prosody_PhonemicStress IF NOT EXISTS
+FOR (ps:PhonemicStress) REQUIRE ps.Value IS UNIQUE;
+CREATE CONSTRAINT Prosody_SyllableWeightStress IF NOT EXISTS
+FOR (sws:SyllableWeightStress) REQUIRE sws.Value IS UNIQUE;
+
+LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/Prosody.csv" AS row
+MERGE (ps:PhonemicStress {Value: toBoolean(toInteger(row.PhonemicStress))})
+MERGE (sws:SyllableWeightStress {Value: toBoolean(toInteger(row.SyllableWeightStress))})
+
+WITH row, ps, sws
+MATCH (l:LangInfo {Name: row.LangID})
+
+MERGE (l)-[r:PHONEMIC_STRESS]->(ps)
+SET r.type = "Prosody"
+MERGE (l)-[r2:SYLLABLE_WEIGHT_STRESS]->(sws)
+SET r2.type = "Prosody";
+"""
+
 # Find words:
 #MATCH (w:EN_Word {Word: "fire"})<-[:IN_EN]-(n)<-[:HAS_WORD]-(l), (n)-[:IN_IPA]->(i) RETURN w, n, i, l;
 
