@@ -255,6 +255,12 @@ MATCH (l:LangInfo)-[:HAS_PHONEME]->(p:Phoneme),
 RETURN l, p;
 """
 
+# Phoneme Features comparison
+"""
+MATCH (l:LangInfo)-[:HAS_PHONEME]->(p:Phoneme)-[:PHONEME_FEATURE]->(f:PhonemeFeature)
+RETURN l, p, f;
+"""
+
 def main():
 	with GraphDatabase.driver(URI, auth=AUTH) as driver:
 		with driver.session(database="conlangs") as session:
