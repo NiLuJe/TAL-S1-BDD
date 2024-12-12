@@ -158,6 +158,7 @@ SET r.type = "Inspiration";
 """
 
 # PhonemeBank
+# NOTE: We could also have added the phoneme type as a property of Phoneme, instead of a rel...
 """
 CREATE CONSTRAINT PhonemeBank_IPA IF NOT EXISTS
 FOR (p:Phoneme) REQUIRE p.IPA IS UNIQUE;
@@ -227,6 +228,13 @@ SET r.type = "Phonology";
 
 # Find words:
 #MATCH (w:EN_Word {Word: "fire"})<-[:IN_EN]-(n)<-[:HAS_WORD]-(l), (n)-[:IN_IPA]->(i) RETURN w, n, i, l;
+
+# Count Vowels:
+"""
+MATCH (l:LangInfo)-[r:HAS_PHONEME]->(p:Phoneme)-[:PHONEME_TYPE]->(pt:PhonemeType {Type: "Vowel"})
+WITH l AS Lang, collect(p) as Phonemes, count(p) AS Vowels
+RETURN Lang, Phonemes, Vowels;
+"""
 
 def main():
 	with GraphDatabase.driver(URI, auth=AUTH) as driver:
