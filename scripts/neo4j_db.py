@@ -105,7 +105,7 @@ SET r4.type = "Lexicon";
 """
 
 # Find words:
-#MATCH (w:EN_Word {Word: "fire"})<-[:IN_EN]-(n)<-[:HAS_WORD]-(l) RETURN w, n, l;
+#MATCH (w:EN_Word {Word: "fire"})<-[:IN_EN]-(n)<-[:HAS_WORD]-(l), (n)-[:IN_IPA]->(i) RETURN w, n, i, l;
 
 def main():
 	with GraphDatabase.driver(URI, auth=AUTH) as driver:
