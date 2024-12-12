@@ -6,8 +6,9 @@ from neo4j import GraphDatabase
 URI = "neo4j://localhost"
 AUTH = ("neo4j", os.getenv("NEO4J_PASS"))
 
-
+# Drop all the things!
 #MATCH (n) DETACH DELETE n;
+# (Print query to) drop all constraints
 #SHOW CONSTRAINTS yield name RETURN "DROP CONSTRAINT " + name + ";";
 
 # LangInfo
