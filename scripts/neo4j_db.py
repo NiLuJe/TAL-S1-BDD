@@ -54,17 +54,17 @@ LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/MorphoSynta
 MERGE (wo:WordOrder {Order: row.WordOrder})
 MERGE (pc:PluralCount {Count: toInteger(row.PluralCount)})
 MERGE (cc:CaseCount {Count: toInteger(row.CaseCount)})
-MERGE (abn:AdjectiveBeforeNoun {Value: toBoolean(row.AdjectiveBeforeNoun)})
-MERGE (aan:AdjectiveAfterNoun {Value: toBoolean(row.AdjectiveAfterNoun)})
-MERGE (aa:AdjectiveAgreement {Value: toBoolean(row.AdjectiveAgreement)})
+MERGE (abn:AdjectiveBeforeNoun {Value: toBoolean(toInteger(row.AdjectiveBeforeNoun))})
+MERGE (aan:AdjectiveAfterNoun {Value: toBoolean(toInteger(row.AdjectiveAfterNoun))})
+MERGE (aa:AdjectiveAgreement {Value: toBoolean(toInteger(row.AdjectiveAgreement))})
 WITH row, wo, pc, cc, abn, aan, aa
 MATCH (l:LangInfo {Name: row.LangID}),
 	  (wo:WordOrder {Order: row.WordOrder}),
 	  (pc:PluralCount {Count: toInteger(row.PluralCount)}),
 	  (cc:CaseCount {Count: toInteger(row.CaseCount)}),
-	  (abn:AdjectiveBeforeNoun {Value: toBoolean(row.AdjectiveBeforeNoun)}),
-	  (aan:AdjectiveAfterNoun {Value: toBoolean(row.AdjectiveAfterNoun)}),
-	  (aa:AdjectiveAgreement {Value: toBoolean(row.AdjectiveAgreement)})
+	  (abn:AdjectiveBeforeNoun {Value: toBoolean(toInteger(row.AdjectiveBeforeNoun))}),
+	  (aan:AdjectiveAfterNoun {Value: toBoolean(toInteger(row.AdjectiveAfterNoun))}),
+	  (aa:AdjectiveAgreement {Value: toBoolean(toInteger(row.AdjectiveAgreement))})
 
 MERGE (l)-[r:WORD_ORDER]->(wo)
 SET r.type = "MorphoSyntax"
