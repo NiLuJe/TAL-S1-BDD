@@ -218,6 +218,10 @@ LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/PhonemeBank
 MATCH (p:Phoneme {IPA: row.IPA})
 MATCH (t:PhonemeType {Type: row.Type})
 SET p.Type = t.Type;
+
+# Or:
+#MATCH (p:Phoneme)-[:PHONEME_TYPE]->(pt:PhonemeType {Type: "Vowel"})
+#SET p.Type = pt.Type;
 """
 
 # Phonology
