@@ -158,7 +158,6 @@ SET r.type = "Inspiration";
 """
 
 # PhonemeBank
-# NOTE: We could also have added the phoneme type as a property of Phoneme, instead of a rel...
 """
 CREATE CONSTRAINT PhonemeBank_IPA IF NOT EXISTS
 FOR (p:Phoneme) REQUIRE p.IPA IS UNIQUE;
@@ -214,6 +213,11 @@ MATCH (f:PhonemeFeature {Name: row.Feature})
 
 MERGE (p)-[r:PHONEME_FEATURE]->(f)
 SET r.type = "Phoneme";
+
+LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/PhonemeBank.csv" AS row
+MATCH (p:Phoneme {IPA: row.IPA})
+MATCH (t:PhonemeType {Type: row.Type})
+SET p.Type = t.Type;
 """
 
 # Phonology
@@ -232,6 +236,10 @@ SET r.type = "Phonology";
 # Count Vowels:
 """
 MATCH (l:LangInfo)-[r:HAS_PHONEME]->(p:Phoneme)-[:PHONEME_TYPE]->(pt:PhonemeType {Type: "Vowel"})
+WITH l AS Lang, collect(p) as Phonemes, count(p) AS Vowels
+RETURN Lang, Phonemes, Vowels;
+
+MATCH (l:LangInfo)-[r:HAS_PHONEME]->(p:Phoneme {Type: "Vowel"})
 WITH l AS Lang, collect(p) as Phonemes, count(p) AS Vowels
 RETURN Lang, Phonemes, Vowels;
 """
