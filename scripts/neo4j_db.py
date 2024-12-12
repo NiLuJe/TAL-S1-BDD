@@ -214,6 +214,16 @@ MERGE (p)-[r:PHONEME_FEATURE]->(f)
 SET r.type = "Phoneme";
 """
 
+# Phonology
+"""
+LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/Phonology.csv" AS row
+MATCH (l:LangInfo {Name: row.LangID})
+MATCH (p:Phoneme {IPA: row.PhonemeID})
+
+MERGE (l)-[r:HAS_PHONEME]->(p)
+SET r.type = "Phonology";
+"""
+
 # Find words:
 #MATCH (w:EN_Word {Word: "fire"})<-[:IN_EN]-(n)<-[:HAS_WORD]-(l), (n)-[:IN_IPA]->(i) RETURN w, n, i, l;
 
