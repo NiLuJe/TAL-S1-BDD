@@ -138,8 +138,8 @@ MERGE (nl:NaturalLanguage {Name: row.NaturalLanguage})
 MERGE (pf:ProsodyFeature {Name: COALESCE(row.ProsodyFeature, "N/A")})
 MERGE (msf:MorphoSyntaxFeature {Name: COALESCE(row.MorphoSyntaxFeature, "N/A")})
 WITH row, nl, pf, msf
-MATCH (l:LangInfo {Name: row.LangID}),
-      (phf:PhonemeFeature {Name: row.PhonologyFeature})
+MATCH (l:LangInfo {Name: row.LangID})
+MATCH (phf:PhonemeFeature {Name: row.PhonologyFeature})
 
 MERGE (l)-[r:INSPIRED_BY]->(nl)
 SET r.type = "Inspiration"
@@ -148,7 +148,7 @@ SET r2.type = "Inspiration"
 MERGE (nl)-[r3:MORPHOSYNTAX_FEATURE]->(msf)
 SET r3.type = "Inspiration"
 MERGE (nl)-[r4:PHONOLOGY_FEATURE]->(phf)
-SET r4.type = "Inspiration"
+SET r4.type = "Inspiration";
 """
 
 # Find words:
