@@ -124,6 +124,33 @@ MERGE (l)-[r2:SYLLABLE_WEIGHT_STRESS]->(sws)
 SET r2.type = "Prosody";
 """
 
+# Inspiration
+"""
+CREATE CONSTRAINT Inspiration_NaturalLanguage IF NOT EXISTS
+FOR (nl:NaturalLanguage) REQUIRE nl.Name IS UNIQUE;
+CREATE CONSTRAINT Inspiration_ProsodyFeature IF NOT EXISTS
+FOR (pf:ProsodyFeature) REQUIRE pf.Name IS UNIQUE;
+CREATE CONSTRAINT Inspiration_MorphoSyntaxFeature IF NOT EXISTS
+FOR (msf:MorphoSyntaxFeature) REQUIRE msf.Name IS UNIQUE;
+
+LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/Inspiration.csv" AS row
+MERGE (nl:NaturalLanguage {Name: row.NaturalLanguage})
+MERGE (pf:ProsodyFeature {Name: COALESCE(row.ProsodyFeature, "N/A")})
+MERGE (msf:MorphoSyntaxFeature {Name: COALESCE(row.MorphoSyntaxFeature, "N/A")})
+WITH row, nl, pf, msf
+MATCH (l:LangInfo {Name: row.LangID}),
+      (phf:PhonemeFeature {Name: row.PhonologyFeature})
+
+MERGE (l)-[r:INSPIRED_BY]->(nl)
+SET r.type = "Inspiration"
+MERGE (nl)-[r2:PROSODY_FEATURE]->(pf)
+SET r2.type = "Inspiration"
+MERGE (nl)-[r3:MORPHOSYNTAX_FEATURE]->(msf)
+SET r3.type = "Inspiration"
+MERGE (nl)-[r4:PHONOLOGY_FEATURE]->(phf)
+SET r4.type = "Inspiration"
+"""
+
 # Find words:
 #MATCH (w:EN_Word {Word: "fire"})<-[:IN_EN]-(n)<-[:HAS_WORD]-(l), (n)-[:IN_IPA]->(i) RETURN w, n, i, l;
 
