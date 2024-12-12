@@ -248,6 +248,13 @@ WITH l AS Lang, collect(p) as Phonemes, count(p) AS Vowels
 RETURN Lang, Phonemes, Vowels;
 """
 
+# Phonemes used in SVO Langs:
+"""
+MATCH (l:LangInfo)-[:HAS_PHONEME]->(p:Phoneme),
+      (l)-[:WORD_ORDER]->(wo:WordOrder {Order: "SVO"})
+RETURN l, p;
+"""
+
 def main():
 	with GraphDatabase.driver(URI, auth=AUTH) as driver:
 		with driver.session(database="conlangs") as session:
