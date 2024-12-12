@@ -58,13 +58,7 @@ MERGE (abn:AdjectiveBeforeNoun {Value: toBoolean(toInteger(row.AdjectiveBeforeNo
 MERGE (aan:AdjectiveAfterNoun {Value: toBoolean(toInteger(row.AdjectiveAfterNoun))})
 MERGE (aa:AdjectiveAgreement {Value: toBoolean(toInteger(row.AdjectiveAgreement))})
 WITH row, wo, pc, cc, abn, aan, aa
-MATCH (l:LangInfo {Name: row.LangID}),
-	  (wo:WordOrder {Order: row.WordOrder}),
-	  (pc:PluralCount {Count: toInteger(row.PluralCount)}),
-	  (cc:CaseCount {Count: toInteger(row.CaseCount)}),
-	  (abn:AdjectiveBeforeNoun {Value: toBoolean(toInteger(row.AdjectiveBeforeNoun))}),
-	  (aan:AdjectiveAfterNoun {Value: toBoolean(toInteger(row.AdjectiveAfterNoun))}),
-	  (aa:AdjectiveAgreement {Value: toBoolean(toInteger(row.AdjectiveAgreement))})
+MATCH (l:LangInfo {Name: row.LangID})
 
 MERGE (l)-[r:WORD_ORDER]->(wo)
 SET r.type = "MorphoSyntax"
