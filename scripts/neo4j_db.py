@@ -3,8 +3,37 @@
 import os
 from neo4j import GraphDatabase
 
-URI = "<URI for Neo4j database>"
+URI = "neo4j://localhost"
 AUTH = ("neo4j", os.getenv("NEO4J_PASS"))
+
+
+#MATCH (n) DETACH DELETE n;
+#SHOW CONSTRAINTS yield name RETURN "DROP CONSTRAINT " + name + ";";
+
+# LangInfo
+"""
+CREATE CONSTRAINT LangInfo_Name IF NOT EXISTS
+FOR (l:LangInfo) REQUIRE l.Name IS UNIQUE;
+
+LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/LangInfo.csv" AS row
+MERGE (l:LangInfo {Name: row.LangName})
+SET
+	l.Creator = row.Creator,
+	l.World = row.World,
+	l.Spoken = toBoolean(row.Spoken),
+	l.Written = toBoolean(row.Written),
+	l.Usage = row.Usage,
+	l.Description = row.Description;
+"""
+
+# PhonemeFeature
+"""
+CREATE CONSTRAINT PhonemeFeature_Name IF NOT EXISTS
+FOR (pf:PhonemeFeature) REQUIRE pf.Name IS UNIQUE;
+
+LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/PhonemeFeature.csv" AS row
+MERGE (f:PhonemeFeature {Name: row.Name});
+"""
 
 def main():
 	with GraphDatabase.driver(URI, auth=AUTH) as driver:
