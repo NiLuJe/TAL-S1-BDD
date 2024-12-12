@@ -51,13 +51,13 @@ CREATE CONSTRAINT MorphoSyntax_AdjectiveAgreement IF NOT EXISTS
 FOR (aa:AdjectiveAgreement) REQUIRE aa.Value IS UNIQUE;
 
 LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/MorphoSyntax.csv" AS row
-MERGE (wo:WordOrder {Order: row.WordOrder}),
-	  (pc:PluralCount {Count: toInteger(row.PluralCount)}),
-	  (cc:CaseCount {Count: toInteger(row.CaseCount)}),
-	  (abn:AdjectiveBeforeNoun {Value: toBoolean(row.AdjectiveBeforeNoun)}),
-	  (aan:AdjectiveAfterNoun {Value: toBoolean(row.AdjectiveAfterNoun)}),
-	  (aa:AdjectiveAgreement {Value: toBoolean(row.AdjectiveAgreement)})
-
+MERGE (wo:WordOrder {Order: row.WordOrder})
+MERGE (pc:PluralCount {Count: toInteger(row.PluralCount)})
+MERGE (cc:CaseCount {Count: toInteger(row.CaseCount)})
+MERGE (abn:AdjectiveBeforeNoun {Value: toBoolean(row.AdjectiveBeforeNoun)})
+MERGE (aan:AdjectiveAfterNoun {Value: toBoolean(row.AdjectiveAfterNoun)})
+MERGE (aa:AdjectiveAgreement {Value: toBoolean(row.AdjectiveAgreement)})
+WITH row, wo, pc, cc, abn, aan, aa
 MATCH (l:LangInfo {Name: row.LangID}),
 	  (wo:WordOrder {Order: row.WordOrder}),
 	  (pc:PluralCount {Count: toInteger(row.PluralCount)}),
