@@ -156,6 +156,57 @@ MERGE (nl)-[r:PHONOLOGY_FEATURE]->(phf)
 SET r.type = "Inspiration";
 """
 
+# PhonemeBank
+"""
+CREATE CONSTRAINT PhonemeBank_IPA IF NOT EXISTS
+FOR (p:Phoneme) REQUIRE p.IPA IS UNIQUE;
+CREATE CONSTRAINT PhonemeBank_Type IF NOT EXISTS
+FOR (t:PhonemeType) REQUIRE t.Type IS UNIQUE;
+CREATE CONSTRAINT PhonemeBank_Vowel_Height IF NOT EXISTS
+FOR (vh:Vowel_Height) REQUIRE vh.Description IS UNIQUE;
+CREATE CONSTRAINT PhonemeBank_Vowel_Backness IF NOT EXISTS
+FOR (vb:Vowel_Backness) REQUIRE vb.Description IS UNIQUE;
+CREATE CONSTRAINT PhonemeBank_Vowel_Roundness IF NOT EXISTS
+FOR (vr:Vowel_Roundness) REQUIRE vb.Description IS UNIQUE;
+CREATE CONSTRAINT PhonemeBank_Consonant_Voicing IF NOT EXISTS
+FOR (cv:Consonant_Voicing) REQUIRE cv.Value IS UNIQUE;
+CREATE CONSTRAINT PhonemeBank_Consonant_ArticulationManner IF NOT EXISTS
+FOR (cam:Consonant_ArticulationManner) REQUIRE cam.Description IS UNIQUE;
+CREATE CONSTRAINT PhonemeBank_Consonant_ArticulationPlace IF NOT EXISTS
+FOR (cap:Consonant_ArticulationPlace) REQUIRE cap.Description IS UNIQUE;
+CREATE CONSTRAINT PhonemeBank_Modifiers IF NOT EXISTS
+FOR (m:Modifiers) REQUIRE m.Description IS UNIQUE;
+
+LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/PhonemeBank.csv" AS row
+MERGE (p:Phoneme {IPA: row.IPA})
+MERGE (t:PhonemeType {Type: row.Type})
+MERGE (vh:Vowel_Height {Description: COALESCE(row.Vowel_Height, "N/A")})
+MERGE (vb:Vowel_Backness {Description: COALESCE(row.Vowel_Backness, "N/A")})
+MERGE (vr:Vowel_Roundness {Description: COALESCE(row.Vowel_Roundness, "N/A")})
+MERGE (cv:Consonant_Voicing {Value: COALESCE(toBooleanOrNull(toInteger(row.Consonant_Voicing)), "N/A")})
+MERGE (cam:Consonant_ArticulationManner {Description: COALESCE(row.Consonant_ArticulationManner, "N/A")})
+MERGE (cap:Consonant_ArticulationPlace {Description: COALESCE(row.Consonant_ArticulationPlace, "N/A")})
+MERGE (m:Modifiers {Description: COALESCE(row.Modifiers, "N/A")})
+
+WITH row, p, t, vh, vb, vr, cv, cam, cap, m
+MERGE (p)-[r:PHONEME_TYPE]->(t)
+SET r.type = "Phoneme"
+MERGE (p)-[r2:VOWEL_HEIGHT]->(vh)
+SET r2.type = "Phoneme"
+MERGE (p)-[r3:VOWEL_BACKNESS]->(vb)
+SET r3.type = "Phoneme"
+MERGE (p)-[r4:VOWEL_ROUNDNESS]->(vr)
+SET r4.type = "Phoneme"
+MERGE (p)-[r5:CONSONNANT_VOICING]->(cv)
+SET r5.type = "Phoneme"
+MERGE (p)-[r6:CONSONNANT_ARTICULATION_MANNER]->(cam)
+SET r6.type = "Phoneme"
+MERGE (p)-[r7:CONSONNANT_ARTICULATION_PLACE]->(cap)
+SET r7.type = "Phoneme"
+MERGE (p)-[r8:PHONEME_MODIFIERS]->(m)
+SET r8.type = "Phoneme"
+"""
+
 # Find words:
 #MATCH (w:EN_Word {Word: "fire"})<-[:IN_EN]-(n)<-[:HAS_WORD]-(l), (n)-[:IN_IPA]->(i) RETURN w, n, i, l;
 
