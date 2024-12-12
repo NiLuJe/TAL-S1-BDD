@@ -80,6 +80,36 @@ MERGE (l)-[r6:ADJ_AGREEMENT]->(aa)
 SET r6.type = "MorphoSyntax";
 """
 
+# Lexicon
+"""
+CREATE CONSTRAINT Lexicon_Native_Word IF NOT EXISTS
+FOR (nw:Native_Word) REQUIRE nw.Word IS UNIQUE;
+CREATE CONSTRAINT Lexicon_EN_Word IF NOT EXISTS
+FOR (enw:EN_Word) REQUIRE enw.Word IS UNIQUE;
+CREATE CONSTRAINT Lexicon_FR_Word IF NOT EXISTS
+FOR (frw:FR_Word) REQUIRE frw.Word IS UNIQUE;
+CREATE CONSTRAINT Lexicon_IPA_Word IF NOT EXISTS
+FOR (ipaw:IPA_Word) REQUIRE ipaw.Transcription IS UNIQUE;
+
+LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/Lexicon.csv" AS row
+MERGE (nw:Native_Word {Word: row.Native_Word})
+MERGE (enw:EN_Word {Word: row.EN_Word})
+MERGE (frw:FR_Word {Word: row.FR_Word})
+MERGE (ipaw:IPA_Word {Transcription: row.IPA_Word})
+
+WITH row, nw, enw, frw, ipaw
+MATCH (l:LangInfo {Name: row.LangID})
+
+MERGE (l)-[r:HAS_WORD]->(nw)
+SET r.type = "Lexicon"
+MERGE (nw)-[r2:IN_EN]->(enw)
+SET r2.type = "Lexicon"
+MERGE (nw)-[r3:IN_FR]->(frw)
+SET r3.type = "Lexicon"
+MERGE (nw)-[r4:IN_IPA]->(ipaw)
+SET r4.type = "Lexicon";
+"""
+
 def main():
 	with GraphDatabase.driver(URI, auth=AUTH) as driver:
 		with driver.session(database="conlangs") as session:
