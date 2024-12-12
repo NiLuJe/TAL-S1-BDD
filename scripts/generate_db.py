@@ -285,8 +285,14 @@ def insert_data(path: str | Path):
 				except sqlite3.IntegrityError as e:
 						print(f"IntegrityError: {e}")
 
-	# FIXME: Associate ArticulationManner w/ a PhonemeFeature (e.g., ejective, plosive, fricative...).
-	#        At the very least ejective just so our request works ;p.
+	# NOTE: Associate "ejective" ArticulationManner w/ the Ejective PhonemeFeature.
+	try:
+		with con:
+			query = """UPDATE PhonemeBank SET Feature = (SELECT ID FROM PhonemeFeature WHERE Name = "Ejective") WHERE Consonant_ArticulationManner LIKE "%ejective%";"""
+			con.execute(query)
+	except sqlite3.IntegrityError as e:
+			print(f"IntegrityError: {e}")
+
 	con.close()
 	print("Inserted data successfully!")
 
