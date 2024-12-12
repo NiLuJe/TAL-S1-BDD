@@ -95,7 +95,7 @@ LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/Lexicon.csv
 MERGE (nw:Native_Word {Word: row.Native_Word})
 MERGE (enw:EN_Word {Word: row.EN_Word})
 MERGE (frw:FR_Word {Word: row.FR_Word})
-MERGE (ipaw:IPA_Word {Transcription: row.IPA_Word})
+MERGE (ipaw:IPA_Word {Transcription: COALESCE(row.IPA_Word, "N/A")})
 
 WITH row, nw, enw, frw, ipaw
 MATCH (l:LangInfo {Name: row.LangID})
