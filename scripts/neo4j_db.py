@@ -167,7 +167,7 @@ FOR (vh:Vowel_Height) REQUIRE vh.Description IS UNIQUE;
 CREATE CONSTRAINT PhonemeBank_Vowel_Backness IF NOT EXISTS
 FOR (vb:Vowel_Backness) REQUIRE vb.Description IS UNIQUE;
 CREATE CONSTRAINT PhonemeBank_Vowel_Roundness IF NOT EXISTS
-FOR (vr:Vowel_Roundness) REQUIRE vb.Description IS UNIQUE;
+FOR (vr:Vowel_Roundness) REQUIRE vr.Description IS UNIQUE;
 CREATE CONSTRAINT PhonemeBank_Consonant_Voicing IF NOT EXISTS
 FOR (cv:Consonant_Voicing) REQUIRE cv.Value IS UNIQUE;
 CREATE CONSTRAINT PhonemeBank_Consonant_ArticulationManner IF NOT EXISTS
@@ -204,7 +204,14 @@ SET r6.type = "Phoneme"
 MERGE (p)-[r7:CONSONNANT_ARTICULATION_PLACE]->(cap)
 SET r7.type = "Phoneme"
 MERGE (p)-[r8:PHONEME_MODIFIERS]->(m)
-SET r8.type = "Phoneme"
+SET r8.type = "Phoneme";
+
+LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/PhonemeBank.csv" AS row
+MATCH (p:Phoneme {IPA: row.IPA})
+MATCH (f:PhonemeFeature {Name: row.Feature})
+
+MERGE (p)-[r:PHONEME_FEATURE]->(f)
+SET r.type = "Phoneme";
 """
 
 # Find words:
