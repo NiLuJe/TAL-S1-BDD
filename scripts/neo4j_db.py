@@ -35,6 +35,50 @@ LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/PhonemeFeat
 MERGE (f:PhonemeFeature {Name: row.Name});
 """
 
+# MorphoSyntax
+"""
+CREATE CONSTRAINT MorphoSyntax_WordOrder IF NOT EXISTS
+FOR (wo:WordOrder) REQUIRE ms.Order IS UNIQUE;
+CREATE CONSTRAINT MorphoSyntax_PluralCount IF NOT EXISTS
+FOR (pc:PluralCount) REQUIRE pc.Count IS UNIQUE;
+CREATE CONSTRAINT MorphoSyntax_CaseCount IF NOT EXISTS
+FOR (cc:CaseCount) REQUIRE cc.Count IS UNIQUE;
+CREATE CONSTRAINT MorphoSyntax_AdjectiveBeforeNoun IF NOT EXISTS
+FOR (abn:AdjectiveBeforeNoun) REQUIRE abn.Value IS UNIQUE;
+CREATE CONSTRAINT MorphoSyntax_AdjectiveAfterNoun IF NOT EXISTS
+FOR (aan:AdjectiveAfterNoun) REQUIRE aan.Value IS UNIQUE;
+CREATE CONSTRAINT MorphoSyntax_AdjectiveAgreement IF NOT EXISTS
+FOR (aa:AdjectiveAgreement) REQUIRE aa.Value IS UNIQUE;
+
+LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/MorphoSyntax.csv" AS row
+MERGE (wo:WordOrder {Order: row.WordOrder})
+MERGE (pc:PluralCount {Count: toInteger(row.PluralCount)})
+MERGE (cc:CaseCount {Count: toInteger(row.CaseCount)})
+MERGE (abn:AdjectiveBeforeNoun {Value: toBoolean(row.AdjectiveBeforeNoun)})
+MERGE (aan:AdjectiveAfterNoun {Value: toBoolean(row.AdjectiveAfterNoun)})
+MERGE (aa:AdjectiveAgreement {Value: toBoolean(row.AdjectiveAgreement)})
+
+MATCH (l:LangInfo {Name: row.LangID})
+MATCH (wo:WordOrder {Order: row.WordOrder})
+MATCH (pc:PluralCount {Count: toInteger(row.PluralCount)})
+MATCH (cc:CaseCount {Count: toInteger(row.CaseCount)})
+MATCH (abn:AdjectiveBeforeNoun {Value: toBoolean(row.AdjectiveBeforeNoun)})
+MATCH (aan:AdjectiveAfterNoun {Value: toBoolean(row.AdjectiveAfterNoun)})
+MATCH (aa:AdjectiveAgreement {Value: toBoolean(row.AdjectiveAgreement)})
+MERGE (l)-[r:WORD_ORDER]->(wo)
+SET r.type = "MorphoSyntax"
+MERGE (l)-[r:PLURAL_COUNT]->(pc)
+SET r.type = "MorphoSyntax"
+MERGE (l)-[r:CASE_COUNT]->(cc)
+SET r.type = "MorphoSyntax"
+MERGE (l)-[r:ADJ_BEFORE_NOUN]->(abn)
+SET r.type = "MorphoSyntax"
+MERGE (l)-[r:ADJ_AFTER_NOUN]->(aan)
+SET r.type = "MorphoSyntax"
+MERGE (l)-[r:ADJ_AGREEMENT]->(aa)
+SET r.type = "MorphoSyntax";
+"""
+
 def main():
 	with GraphDatabase.driver(URI, auth=AUTH) as driver:
 		with driver.session(database="conlangs") as session:
