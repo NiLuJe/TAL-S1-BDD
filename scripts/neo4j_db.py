@@ -255,6 +255,14 @@ MATCH (l:LangInfo)-[:HAS_PHONEME]->(p:Phoneme)-[:PHONEME_FEATURE]->(f:PhonemeFea
 RETURN l, p, f;
 """
 
+# Compare MorphoSyntax feats for Langs w/ Diphthongs
+"""
+MATCH (l:LangInfo)-[:HAS_PHONEME]->(p:Phoneme)-[:PHONEME_FEATURE]->(pf:PhonemeFeature {Name: "Diphthong"})
+MATCH (l)-[:WORD_ORDER]->(wo:WordOrder)
+MATCH (l)-[:CASE_COUNT]->(cc:CaseCount)
+RETURN l, p, wo, cc;
+"""
+
 # Count Vowels:
 """
 MATCH (l:LangInfo)-[r:HAS_PHONEME]->(p:Phoneme)-[:PHONEME_TYPE]->(pt:PhonemeType {Type: "Vowel"})
@@ -275,14 +283,6 @@ MATCH (w:EN_Word)<-[:IN_EN]-(n)<-[:HAS_WORD]-(l),
       (n)-[:IN_IPA]->(i)
 WHERE w.Word IN ["fire", "greetings"]
 RETURN w, n, i, l;
-"""
-
-# Compare MorphoSyntax feats for Langs w/ Diphthongs
-"""
-MATCH (l:LangInfo)-[:HAS_PHONEME]->(p:Phoneme)-[:PHONEME_FEATURE]->(pf:PhonemeFeature {Name: "Diphthong"})
-MATCH (l)-[:WORD_ORDER]->(wo:WordOrder)
-MATCH (l)-[:CASE_COUNT]->(cc:CaseCount)
-RETURN l, p, wo, cc;
 """
 
 # Match shared phonemes

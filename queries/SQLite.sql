@@ -9,8 +9,24 @@ FROM
 WHERE
 	MorphoSyntax.WordOrder = "SVO";
 
---
---
+-- Phoneme Features comparison
+SELECT
+	LangName AS Langue,
+	IPA AS Phonème,
+	Name AS Propriété
+FROM
+	LangInfo,
+	PhonemeBank,
+	PhonemeFeature
+	JOIN Phonology ON PhonemeBank.PhonemeID = Phonology.PhonemeID
+	AND PhonemeBank.Feature = PhonemeFeature.ID
+	AND Phonology.LangID = LangInfo.LangID
+ORDER BY
+	Langue,
+	Propriété,
+	Phonème;
+
+-- Compare MorphoSyntax feats for Langs w/ Diphthongs
 SELECT
 	LangName AS Langue,
 	IPA AS Phonème,
