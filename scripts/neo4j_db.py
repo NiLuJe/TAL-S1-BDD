@@ -269,6 +269,14 @@ WHERE w.Word IN ["fire", "greetings"]
 RETURN w, n, i, l;
 """
 
+# Compare MorphoSyntax feats for Langs w/ Diphthongs
+"""
+MATCH (l:LangInfo)-[:HAS_PHONEME]->(p:Phoneme)-[:PHONEME_FEATURE]->(pf:PhonemeFeature {Name: "Diphthong"})
+MATCH (l)-[:WORD_ORDER]->(wo:WordOrder)
+MATCH (l)-[:CASE_COUNT]->(cc:CaseCount)
+RETURN l, p, wo, cc;
+"""
+
 def main():
 	with GraphDatabase.driver(URI, auth=AUTH) as driver:
 		with driver.session(database="conlangs") as session:
