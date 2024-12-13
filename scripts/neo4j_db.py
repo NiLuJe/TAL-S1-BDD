@@ -11,6 +11,10 @@ AUTH = ("neo4j", os.getenv("NEO4J_PASS"))
 # (Print query to) drop all constraints
 #SHOW CONSTRAINTS yield name RETURN "DROP CONSTRAINT " + name + ";";
 
+##
+## Nodes & Relationships
+##
+
 # LangInfo
 """
 CREATE CONSTRAINT LangInfo_Name IF NOT EXISTS
@@ -234,16 +238,9 @@ MERGE (l)-[r:HAS_PHONEME]->(p)
 SET r.type = "Phonology";
 """
 
-# Count Vowels:
-"""
-MATCH (l:LangInfo)-[r:HAS_PHONEME]->(p:Phoneme)-[:PHONEME_TYPE]->(pt:PhonemeType {Type: "Vowel"})
-WITH l AS Lang, collect(p) as Phonemes, count(p) AS Vowels
-RETURN Lang, Phonemes, Vowels;
-
-MATCH (l:LangInfo)-[r:HAS_PHONEME]->(p:Phoneme {Type: "Vowel"})
-WITH l AS Lang, collect(p) as Phonemes, count(p) AS Vowels
-RETURN Lang, Phonemes, Vowels;
-"""
+##
+## Queries
+##
 
 # Phonemes used in SVO Langs:
 """
@@ -256,6 +253,17 @@ RETURN l, p;
 """
 MATCH (l:LangInfo)-[:HAS_PHONEME]->(p:Phoneme)-[:PHONEME_FEATURE]->(f:PhonemeFeature)
 RETURN l, p, f;
+"""
+
+# Count Vowels:
+"""
+MATCH (l:LangInfo)-[r:HAS_PHONEME]->(p:Phoneme)-[:PHONEME_TYPE]->(pt:PhonemeType {Type: "Vowel"})
+WITH l AS Lang, collect(p) as Phonemes, count(p) AS Vowels
+RETURN Lang, Phonemes, Vowels;
+
+MATCH (l:LangInfo)-[r:HAS_PHONEME]->(p:Phoneme {Type: "Vowel"})
+WITH l AS Lang, collect(p) as Phonemes, count(p) AS Vowels
+RETURN Lang, Phonemes, Vowels;
 """
 
 # Lookup fire

@@ -6,7 +6,7 @@ CREATE TABLE Phonology (
 	PhonemeID INTEGER,
 	CONSTRAINT Phonology_PK PRIMARY KEY (ID),
 	CONSTRAINT Phonology_LangInfo_FK FOREIGN KEY (LangID) REFERENCES LangInfo (LangID),
-	CONSTRAINT Phonology_PhonemeBank_FK FOREIGN KEY (ID) REFERENCES PhonemeBank (PhonemeID)
+	CONSTRAINT Phonology_PhonemeBank_FK FOREIGN KEY (PhonemeID) REFERENCES PhonemeBank (PhonemeID)
 );
 
 CREATE TABLE LangInfo (
