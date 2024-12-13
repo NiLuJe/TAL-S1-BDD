@@ -234,9 +234,6 @@ MERGE (l)-[r:HAS_PHONEME]->(p)
 SET r.type = "Phonology";
 """
 
-# Find words:
-#MATCH (w:EN_Word {Word: "fire"})<-[:IN_EN]-(n)<-[:HAS_WORD]-(l), (n)-[:IN_IPA]->(i) RETURN w, n, i, l;
-
 # Count Vowels:
 """
 MATCH (l:LangInfo)-[r:HAS_PHONEME]->(p:Phoneme)-[:PHONEME_TYPE]->(pt:PhonemeType {Type: "Vowel"})
@@ -259,6 +256,12 @@ RETURN l, p;
 """
 MATCH (l:LangInfo)-[:HAS_PHONEME]->(p:Phoneme)-[:PHONEME_FEATURE]->(f:PhonemeFeature)
 RETURN l, p, f;
+"""
+
+# Lookup fire
+"""
+MATCH (w:EN_Word {Word: "fire"})<-[:IN_EN]-(n)<-[:HAS_WORD]-(l), (n)-[:IN_IPA]->(i)
+RETURN w, n, i, l;
 """
 
 def main():
