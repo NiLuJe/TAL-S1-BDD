@@ -204,6 +204,8 @@ def insert_data(path: str | Path):
 			print(f"IntegrityError: {e}")
 	# Dedupe while keeping insertion order (no OrderedSet, so we rely on dicts retaining insertion order instead)...
 	tables = list(dict.fromkeys(tables))
+	# Do not import PhonemeBank.csv, that's only for Neo4j
+	tables.remove("PhonemeBank")
 
 	# Keep a cache of foreign key mappings
 	langs = {}
