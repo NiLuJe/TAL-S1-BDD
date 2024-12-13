@@ -23,7 +23,7 @@ def create_db(path: str | Path):
 			with con:
 				con.executescript(f.read())
 		except sqlite3.IntegrityError as e:
-				print(f"IntegrityError: {e}")
+				print(f"!! IntegrityError: {e}")
 
 	con.close()
 	print("Database created successfully!")
@@ -64,7 +64,7 @@ def generate_ipa_bank(path: str | Path):
 					print(data)
 					con.execute("INSERT INTO PhonemeBank(IPA, Type, Modifiers) VALUES(?, ?, ?)", data)
 	except sqlite3.IntegrityError as e:
-			print(f"IntegrityError: {e}")
+			print(f"!! IntegrityError: {e}")
 
 	con.close()
 	print("Inserted phone data successfully!")
@@ -82,7 +82,7 @@ def lookup_lang_id(con: sqlite3.Connection, lang_name: str) -> int:
 			print(lang_id)
 			return lang_id
 	except sqlite3.IntegrityError as e:
-			print(f"IntegrityError: {e}")
+			print(f"!! IntegrityError: {e}")
 
 	print()
 	raise ValueError(f"Unknown language {lang_name}!")
@@ -104,7 +104,7 @@ def lookup_feat_id(con: sqlite3.Connection, feature_name: str) -> int | None:
 			print(feature_id )
 			return feature_id
 	except sqlite3.IntegrityError as e:
-			print(f"IntegrityError: {e}")
+			print(f"!! IntegrityError: {e}")
 
 	print()
 	raise ValueError(f"Unknown feature {feature_name}!")
@@ -184,7 +184,7 @@ def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 			print(f"{phoneme} is @ rowid {phoneme_id}")
 			return phoneme_id
 	except sqlite3.IntegrityError as e:
-			print(f"IntegrityError: {e}")
+			print(f"!! IntegrityError: {e}")
 
 	print()
 	raise ValueError(f"Unknown phoneme {phoneme}!")
@@ -201,7 +201,7 @@ def insert_data(path: str | Path):
 			for row in con.execute("SELECT name FROM sqlite_master WHERE type = ? ORDER BY name ASC", ("table", )):
 				tables.append(row["name"])
 	except sqlite3.IntegrityError as e:
-			print(f"IntegrityError: {e}")
+			print(f"!! IntegrityError: {e}")
 	# Dedupe while keeping insertion order (no OrderedSet, so we rely on dicts retaining insertion order instead)...
 	tables = list(dict.fromkeys(tables))
 	# Do not import PhonemeBank.csv, that's only for Neo4j
@@ -285,7 +285,7 @@ def insert_data(path: str | Path):
 					with con:
 						con.execute(query, data)
 				except sqlite3.IntegrityError as e:
-						print(f"IntegrityError: {e}")
+						print(f"!! IntegrityError: {e}")
 
 	# NOTE: Associate "ejective" ArticulationManner w/ the Ejective PhonemeFeature.
 	try:
@@ -293,7 +293,7 @@ def insert_data(path: str | Path):
 			query = """UPDATE PhonemeBank SET Feature = (SELECT ID FROM PhonemeFeature WHERE Name = "Ejective") WHERE Consonant_ArticulationManner LIKE "%ejective%";"""
 			con.execute(query)
 	except sqlite3.IntegrityError as e:
-			print(f"IntegrityError: {e}")
+			print(f"!! IntegrityError: {e}")
 
 	con.close()
 	print("Inserted data successfully!")
