@@ -21,14 +21,14 @@ FROM
 	PhonemeBank,
 	MorphoSyntax
 	JOIN Phonology,
-	PhonemeFeature ON PhonemeBank.PhonemeID = Phonology.P honemeID
+	PhonemeFeature ON PhonemeBank.PhonemeID = Phonology.PhonemeID
 	AND PhonemeBank.Feature = PhonemeFeature.ID
 	AND Phonology.LangID = LangInfo.LangID
 	AND MorphoSyntax.LangID = LangInfo.LangID
 WHERE
 	PhonemeFeature.Name LIKE "Diphthong"
 ORDER BY
-	Lang ue,
+	Langue,
 	Phonème;
 
 --
