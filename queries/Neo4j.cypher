@@ -249,3 +249,7 @@ MATCH (w:EN_Word)<-[:IN_EN]-(n)<-[:HAS_WORD]-(l),
       (n)-[:IN_IPA]->(i)
 WHERE w.Word IN ["fire", "greetings"]
 RETURN w, n, i, l;
+
+// Match Phonemes w/ rels
+MATCH (x)--(p:Phoneme)--(y)
+RETURN x, p, y;
