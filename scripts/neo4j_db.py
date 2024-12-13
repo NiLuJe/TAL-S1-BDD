@@ -262,6 +262,11 @@ RETURN l, p, f;
 """
 MATCH (w:EN_Word {Word: "fire"})<-[:IN_EN]-(n)<-[:HAS_WORD]-(l), (n)-[:IN_IPA]->(i)
 RETURN w, n, i, l;
+
+MATCH (w:EN_Word)<-[:IN_EN]-(n)<-[:HAS_WORD]-(l),
+      (n)-[:IN_IPA]->(i)
+WHERE w.Word IN ["fire", "greetings"]
+RETURN w, n, i, l;
 """
 
 def main():
