@@ -277,6 +277,12 @@ MATCH (l)-[:CASE_COUNT]->(cc:CaseCount)
 RETURN l, p, wo, cc;
 """
 
+# Match shared phonemes
+"""
+MATCH (l1:LangInfo)-[r1:HAS_PHONEME]->(p:Phoneme)<-[r2:HAS_PHONEME]-(l2:LangInfo)
+RETURN l1, l2, p;
+"""
+
 def main():
 	with GraphDatabase.driver(URI, auth=AUTH) as driver:
 		with driver.session(database="conlangs") as session:
