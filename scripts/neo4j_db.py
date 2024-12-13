@@ -274,7 +274,13 @@ WITH l AS Lang, collect(p) as Phonemes, count(p) AS Vowels
 RETURN Lang, Phonemes, Vowels;
 """
 
-# Lookup fire
+# Match shared phonemes
+"""
+MATCH (l1:LangInfo)-[r1:HAS_PHONEME]->(p:Phoneme)<-[r2:HAS_PHONEME]-(l2:LangInfo)
+RETURN l1, l2, p;
+"""
+
+# Lookup fire & co
 """
 MATCH (w:EN_Word {Word: "fire"})<-[:IN_EN]-(n)<-[:HAS_WORD]-(l), (n)-[:IN_IPA]->(i)
 RETURN w, n, i, l;
@@ -283,12 +289,6 @@ MATCH (w:EN_Word)<-[:IN_EN]-(n)<-[:HAS_WORD]-(l),
       (n)-[:IN_IPA]->(i)
 WHERE w.Word IN ["fire", "greetings"]
 RETURN w, n, i, l;
-"""
-
-# Match shared phonemes
-"""
-MATCH (l1:LangInfo)-[r1:HAS_PHONEME]->(p:Phoneme)<-[r2:HAS_PHONEME]-(l2:LangInfo)
-RETURN l1, l2, p;
 """
 
 def main():

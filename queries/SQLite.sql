@@ -47,7 +47,22 @@ ORDER BY
 	Langue,
 	Phonème;
 
---
+-- Count Vowels
+SELECT
+	LangName AS Langue,
+	COUNT(PhonemeBank.IPA) AS NB_Voyelles
+FROM
+	Phonology
+	JOIN PhonemeBank ON Phonology.PhonemeID = PhonemeBank.PhonemeID
+	JOIN LangInfo ON Phonology.LangID = LangInfo.LangID
+WHERE
+	Type LIKE "Vowel"
+GROUP BY
+	Langue
+ORDER BY
+	NB_Voyelles DESC;
+
+-- Shared phonemes
 SELECT
 	L1.LangName AS Language_1,
 	L2.LangName AS Language_2,
@@ -63,3 +78,18 @@ GROUP BY
 	L2.LangName
 ORDER BY
 	Shared_Phonemes DESC;
+
+-- Lookup fire & co
+SELECT
+	LangName,
+	Native_Word,
+	IPA_Word,
+	EN_Word
+FROM
+	Lexicon
+	JOIN LangInfo ON Lexicon.LangID = LangInfo.LangID
+WHERE
+	Lexicon.EN_Word IN ("fire", "greetings")
+ORDER BY
+	EN_Word,
+	LangName;
