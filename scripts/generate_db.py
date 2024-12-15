@@ -31,6 +31,7 @@ def create_db(path: str | Path):
 def generate_ipa_bank(path: str | Path):
 	"""Insert IPA phones (from ipapy) into the PhonemeBank table"""
 	con = sqlite3.connect(path, autocommit = False)
+	con.row_factory = sqlite3.Row
 
 	try:
 		with con:
