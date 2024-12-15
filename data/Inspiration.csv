@@ -5,3 +5,5 @@ ID,LangID,NaturalLanguage,PhonologyFeature,ProsodyFeature,MorphoSyntaxFeature
 ,Dothraki,Turc,,,WordOrder
 ,Quenya,Latin,,,CaseCount
 ,Quenya,Finnois,Any,,
+,Sindarin,Gallois,Any,,
+,Sindarin,Latin,,SyllableWeightStress,
