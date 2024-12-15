@@ -20,7 +20,7 @@ SET
 CREATE CONSTRAINT PhonemeFeature_Name IF NOT EXISTS
 FOR (pf:PhonemeFeature) REQUIRE pf.Name IS UNIQUE;
 
-LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/PhonemeFeature.csv" AS row
+LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/PhonemeFeature-Exported.csv" AS row
 MERGE (f:PhonemeFeature {Name: row.Name});
 
 // MorphoSyntax
@@ -157,7 +157,7 @@ FOR (cap:Consonant_ArticulationPlace) REQUIRE cap.Description IS UNIQUE;
 CREATE CONSTRAINT PhonemeBank_Modifiers IF NOT EXISTS
 FOR (m:Modifiers) REQUIRE m.Description IS UNIQUE;
 
-LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/PhonemeBank.csv" AS row
+LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/PhonemeBank-Exported.csv" AS row
 MERGE (p:Phoneme {IPA: row.IPA})
 MERGE (t:PhonemeType {Type: row.Type})
 MERGE (vh:Vowel_Height {Description: COALESCE(row.Vowel_Height, "N/A")})
