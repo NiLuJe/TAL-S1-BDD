@@ -46,7 +46,6 @@ def generate_ipa_bank(path: str | Path):
 						modifs = " ".join(p.modifiers)
 					else:
 						modifs = None
-					# FIXME: Use coarser features (split on - and keep the last element only?)
 					# Use the backness as the feature
 					feat = lookup_or_insert_feat(con, p.backness.title().replace("-", ""))
 					data = (str(p), "Vowel", p.height, p.backness, p.roundness, modifs, feat)
@@ -57,8 +56,15 @@ def generate_ipa_bank(path: str | Path):
 						modifs = " ".join(p.modifiers)
 					else:
 						modifs = None
-					# Use the articulation manner as the feature
-					feat = lookup_or_insert_feat(con, p.manner.title().replace("-", ""))
+					# NOTE: We extract a coarser feature marker for simplicity's sake.
+					#       The last element of the articulation manner is usually a fine choice,
+					#       except for ejectives, which isn't the final element, but which we do want to keep separate...
+					manners = p.manner.split("-")
+					ejective = manners.index("ejective")
+					if ejective:
+						feat = manners[ejective].title()
+					else:
+						feat = manners[-1].title()
 					data = (str(p), "Consonant", 1 if p.voicing == "voiced" else 0, p.manner, p.place, modifs, feat)
 					print(data)
 					con.execute("INSERT INTO PhonemeBank(IPA, Type, Consonant_Voicing, Consonant_ArticulationManner, Consonant_ArticulationPlace, Modifiers, Feature) VALUES(?, ?, ?, ?, ?, ?, ?)", data)
