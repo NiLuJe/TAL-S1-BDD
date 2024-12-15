@@ -60,10 +60,10 @@ def generate_ipa_bank(path: str | Path):
 					#       The last element of the articulation manner is usually a fine choice,
 					#       except for ejectives, which isn't the final element, but which we do want to keep separate...
 					manners = p.manner.split("-")
-					ejective = manners.index("ejective")
-					if ejective:
+					try:
+						ejective = manners.index("ejective")
 						feat = manners[ejective].title()
-					else:
+					except ValueError:
 						feat = manners[-1].title()
 					data = (str(p), "Consonant", 1 if p.voicing == "voiced" else 0, p.manner, p.place, modifs, feat)
 					print(data)
