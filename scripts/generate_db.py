@@ -57,17 +57,23 @@ def generate_ipa_bank(path: str | Path):
 					print(data)
 					con.execute("INSERT INTO PhonemeBank(IPA, Type, Consonant_Voicing, Consonant_ArticulationManner, Consonant_ArticulationPlace, Modifiers, Feature) VALUES(?, ?, ?, ?, ?, ?, ?)", data)
 				elif p.is_diacritic:
-					data = (str(p), "Diacritic", p.name.replace(" diacritic", ""))
+					# Use the modifiers as the feature
+					feat = lookup_or_insert_feat(con, p.modifiers.title().replace("-", ""))
+					data = (str(p), "Diacritic", p.name.replace(" diacritic", ""), feat)
 					print(data)
-					con.execute("INSERT INTO PhonemeBank(IPA, Type, Modifiers) VALUES(?, ?, ?)", data)
+					con.execute("INSERT INTO PhonemeBank(IPA, Type, Modifiers, Feature) VALUES(?, ?, ?, ?)", data)
 				elif p.is_suprasegmental:
-					data = (str(p), "Suprasegmental", p.name.replace(" suprasegmental", ""))
+					# Use the modifiers as the feature
+					feat = lookup_or_insert_feat(con, p.modifiers.title().replace("-", ""))
+					data = (str(p), "Suprasegmental", p.name.replace(" suprasegmental", ""), feat)
 					print(data)
-					con.execute("INSERT INTO PhonemeBank(IPA, Type, Modifiers) VALUES(?, ?, ?)", data)
+					con.execute("INSERT INTO PhonemeBank(IPA, Type, Modifiers, Feature) VALUES(?, ?, ?, ?)", data)
 				elif p.is_tone:
-					data = (str(p), "Tone", p.name.replace(" tone", ""))
+					# Use the modifiers as the feature
+					feat = lookup_or_insert_feat(con, p.modifiers.title().replace("-", ""))
+					data = (str(p), "Tone", p.name.replace(" tone", ""), feat)
 					print(data)
-					con.execute("INSERT INTO PhonemeBank(IPA, Type, Modifiers) VALUES(?, ?, ?)", data)
+					con.execute("INSERT INTO PhonemeBank(IPA, Type, Modifiers, Feature) VALUES(?, ?, ?, ?)", data)
 	except sqlite3.IntegrityError as e:
 			print(f"!! IntegrityError: {e}")
 
