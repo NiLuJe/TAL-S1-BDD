@@ -14,6 +14,11 @@ DB_PATH = Path(BASE_DIR / "DB" / "conlangs.db")
 DATA_PATH = Path(BASE_DIR / "data")
 SCHEMA_PATH = Path(DATA_PATH / "conlangs_schema.sql")
 
+# Keep a cache of foreign key mappings
+MAP_LANGS = {}
+MAP_PHONEMES = {}
+MAP_FEATURES = {}
+
 def create_db(path: str | Path):
 	"""Import bare SQL schema into a brand new DB"""
 	con = sqlite3.connect(path, autocommit = False)
@@ -85,6 +90,11 @@ def generate_ipa_bank(path: str | Path):
 
 def lookup_lang_id(con: sqlite3.Connection, lang_name: str) -> int:
 	"""Lookup the LangID of a given lang"""
+	lang_id = MAP_LANGS.get(lang_name)
+	if lang_id:
+		# Cache hit
+		return lang_id
+
 	print(f"Looking up LangID for {lang_name}... ", end = "")
 	try:
 		with con:
@@ -94,6 +104,8 @@ def lookup_lang_id(con: sqlite3.Connection, lang_name: str) -> int:
 			lang_id = row["LangID"]
 			# Log it
 			print(lang_id)
+			# Cache it
+			MAP_LANGS[lang_name] = lang_id
 			return lang_id
 	except sqlite3.IntegrityError as e:
 			print(f"!! IntegrityError: {e}")
@@ -107,6 +119,11 @@ def lookup_feat_id(con: sqlite3.Connection, feature_name: str) -> int | None:
 	if not feature_name:
 		return None
 
+	feat_id = MAP_FEATURES.get(feature_name)
+	if feat_id:
+		# Cache hit
+		return feat_id
+
 	print(f"Looking up PhonemeFeature for {feature_name}... ", end = "")
 	try:
 		with con:
@@ -119,6 +136,8 @@ def lookup_feat_id(con: sqlite3.Connection, feature_name: str) -> int | None:
 				feature_id = None
 			# Log it
 			print(feature_id )
+			# Cache it
+			MAP_FEATURES[feature_name] = feat_id
 			return feature_id
 	except sqlite3.IntegrityError as e:
 			print(f"!! IntegrityError: {e}")
@@ -147,6 +166,12 @@ def lookup_or_insert_feat(con: sqlite3.Connection, feature_name: str) -> int | N
 
 def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 	"""Lookup the PhonemeID of a given IPA string"""
+
+	phoneme_id = MAP_PHONEMES.get(phoneme)
+	if phoneme_id:
+		# Cache hit
+		return phoneme_id
+
 	print(f"Looking up PhonemeID for {phoneme}... ")
 	try:
 		with con:
@@ -219,6 +244,8 @@ def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 			phoneme_id = row["PhonemeID"]
 			# Log it
 			print(f"{phoneme} is @ rowid {phoneme_id}")
+			# Cache it
+			MAP_PHONEMES[phoneme] = phoneme_id
 			return phoneme_id
 	except sqlite3.IntegrityError as e:
 			print(f"!! IntegrityError: {e}")
@@ -243,11 +270,6 @@ def insert_data(path: str | Path):
 	tables = list(dict.fromkeys(tables))
 	# Do not import PhonemeBank.csv, that's only for Neo4j
 	tables.remove("PhonemeBank")
-
-	# Keep a cache of foreign key mappings
-	langs = {}
-	phonemes = {}
-	features = {}
 
 	for table in tables:
 		csv_file = Path(DATA_PATH / table).with_suffix(".csv")
@@ -277,32 +299,20 @@ def insert_data(path: str | Path):
 						if table == "Inspiration":
 							# Lookup PhonologyFeature
 							feature = row["PhonologyFeature"]
-							feat_id = features.get(feature)
-							if not feat_id:
-								feat_id = lookup_feat_id(con, feature)
-								# Cache it
-								features[feature] = feat_id
+							feat_id = lookup_feat_id(con, feature)
 							# Replace the feature name by its id
 							row["PhonologyFeature"] = feat_id
 						elif table == "Phonology":
 							# Lookup PhonemeID
 							phoneme = row["PhonemeID"]
-							phoneme_id = phonemes.get(phoneme)
-							if not phoneme_id:
-								phoneme_id = lookup_phoneme_id(con, phoneme)
-								# Cache it
-								phonemes[phoneme] = phoneme_id
+							phoneme_id = lookup_phoneme_id(con, phoneme)
 							# Replace the feature name by its id
 							row["PhonemeID"] = phoneme_id
 
 						# Lookup LangID (if any), as we use the name and not the db's rowid in our data to make data entry easier
 						lang_name = row.get("LangID")
 						if lang_name:
-							lang_id = langs.get(lang_name)
-							if not lang_id:
-								lang_id = lookup_lang_id(con, lang_name)
-								# Cache it
-								langs[lang_name] = lang_id
+							lang_id = lookup_lang_id(con, lang_name)
 							# Replace the lang name by its id
 							row["LangID"] = lang_id
 
