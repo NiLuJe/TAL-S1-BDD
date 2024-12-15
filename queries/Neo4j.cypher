@@ -137,6 +137,7 @@ MERGE (nl)-[r:PHONOLOGY_FEATURE]->(phf)
 SET r.type = "Inspiration";
 
 // PhonemeBank
+// FIXME: Only keep Feature & IPA as a node, set everything else as a property
 CREATE CONSTRAINT PhonemeBank_IPA IF NOT EXISTS
 FOR (p:Phoneme) REQUIRE p.IPA IS UNIQUE;
 CREATE CONSTRAINT PhonemeBank_Type IF NOT EXISTS
