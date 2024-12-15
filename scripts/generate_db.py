@@ -119,10 +119,10 @@ def lookup_feat_id(con: sqlite3.Connection, feature_name: str) -> int | None:
 	if not feature_name:
 		return None
 
-	feat_id = MAP_FEATURES.get(feature_name)
-	if feat_id:
+	feature_id = MAP_FEATURES.get(feature_name)
+	if feature_id:
 		# Cache hit
-		return feat_id
+		return feature_id
 
 	print(f"Looking up PhonemeFeature for {feature_name}... ", end = "")
 	try:
@@ -137,7 +137,7 @@ def lookup_feat_id(con: sqlite3.Connection, feature_name: str) -> int | None:
 			# Log it
 			print(feature_id )
 			# Cache it
-			MAP_FEATURES[feature_name] = feat_id
+			MAP_FEATURES[feature_name] = feature_id
 			return feature_id
 	except sqlite3.IntegrityError as e:
 			print(f"!! IntegrityError: {e}")
