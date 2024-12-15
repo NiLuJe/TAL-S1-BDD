@@ -62,9 +62,9 @@ def generate_ipa_bank(path: str | Path):
 					manners = p.manner.split("-")
 					try:
 						ejective = manners.index("ejective")
-						feat = manners[ejective].title()
+						feat = lookup_or_insert_feat(con, manners[ejective].title())
 					except ValueError:
-						feat = manners[-1].title()
+						feat = lookup_or_insert_feat(con, manners[-1].title())
 					data = (str(p), "Consonant", 1 if p.voicing == "voiced" else 0, p.manner, p.place, modifs, feat)
 					print(data)
 					con.execute("INSERT INTO PhonemeBank(IPA, Type, Consonant_Voicing, Consonant_ArticulationManner, Consonant_ArticulationPlace, Modifiers, Feature) VALUES(?, ?, ?, ?, ?, ?, ?)", data)
