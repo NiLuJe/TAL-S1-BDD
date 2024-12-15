@@ -104,7 +104,10 @@ def lookup_feat_id(con: sqlite3.Connection, feature_name: str) -> int | None:
 			data = (feature_name, )
 			res = con.execute("SELECT ID FROM PhonemeFeature WHERE Name = ?", data)
 			row = res.fetchone()
-			feature_id = row["ID"]
+			if row:
+				feature_id = row["ID"]
+			else:
+				feature_id = None
 			# Log it
 			print(feature_id )
 			return feature_id
