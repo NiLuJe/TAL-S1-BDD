@@ -40,17 +40,21 @@ def generate_ipa_bank(path: str | Path):
 						modifs = " ".join(p.modifiers)
 					else:
 						modifs = None
-					data = (str(p), "Vowel", p.height, p.backness, p.roundness, modifs)
+					# Use the backness as the feature
+					feat = lookup_or_insert_feat(con, p.backness.title().replace("-", ""))
+					data = (str(p), "Vowel", p.height, p.backness, p.roundness, modifs, feat)
 					print(data)
-					con.execute("INSERT INTO PhonemeBank(IPA, Type, Vowel_Height, Vowel_Backness, Vowel_Roundness, Modifiers) VALUES(?, ?, ?, ?, ?, ?)", data)
+					con.execute("INSERT INTO PhonemeBank(IPA, Type, Vowel_Height, Vowel_Backness, Vowel_Roundness, Modifiers, Feature) VALUES(?, ?, ?, ?, ?, ?, ?)", data)
 				elif p.is_consonant:
 					if p.modifiers:
 						modifs = " ".join(p.modifiers)
 					else:
 						modifs = None
-					data = (str(p), "Consonant", 1 if p.voicing == "voiced" else 0, p.manner, p.place, modifs)
+					# Use the articulation manner as the feature
+					feat = lookup_or_insert_feat(con, p.manner.title().replace("-", ""))
+					data = (str(p), "Consonant", 1 if p.voicing == "voiced" else 0, p.manner, p.place, modifs, feat)
 					print(data)
-					con.execute("INSERT INTO PhonemeBank(IPA, Type, Consonant_Voicing, Consonant_ArticulationManner, Consonant_ArticulationPlace, Modifiers) VALUES(?, ?, ?, ?, ?, ?)", data)
+					con.execute("INSERT INTO PhonemeBank(IPA, Type, Consonant_Voicing, Consonant_ArticulationManner, Consonant_ArticulationPlace, Modifiers, Feature) VALUES(?, ?, ?, ?, ?, ?, ?)", data)
 				elif p.is_diacritic:
 					data = (str(p), "Diacritic", p.name.replace(" diacritic", ""))
 					print(data)
@@ -109,6 +113,25 @@ def lookup_feat_id(con: sqlite3.Connection, feature_name: str) -> int | None:
 	print()
 	raise ValueError(f"Unknown feature {feature_name}!")
 
+def insert_feat(con: sqlite3.Connection, feature_name: str) -> None:
+	"""Insert a new PhonemeFeature"""
+	print(f"Inserting PhonemeFeature {feature_name}... ", end = "")
+	try:
+		with con:
+			data = (feature_name, )
+			con.execute("INSERT INTO PhonemeFeature(Name) VALUES(?)", data)
+	except sqlite3.IntegrityError as e:
+			print(f"!! IntegrityError: {e}")
+
+	print()
+
+def lookup_or_insert_feat(con: sqlite3.Connection, feature_name: str) -> int | None:
+	feat_id = lookup_feat_id(con, feature_name)
+	if feat_id is None:
+		insert_feat(con, feature_name)
+		return lookup_feat_id(con, feature_name)
+	return feat_id
+
 def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 	"""Lookup the PhonemeID of a given IPA string"""
 	print(f"Looking up PhonemeID for {phoneme}... ")
@@ -160,12 +183,9 @@ def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 						case _:
 							if left_row["Type"] == right_row["Type"]:
 								type = left_row["Type"]
-								# Handle Nasalized & Affricates
 								if type == "Consonant":
-									if nfd_phoneme[-2] == "t":
-										feature = lookup_feat_id(con, "Affricate")
-									elif nfd_phoneme[-2] == "n":
-										feature = lookup_feat_id(con, "Nasalized")
+									# Trust the leading consonant's feature (i.e., articulation manner)
+									feature = left_row["Feature"]
 								elif type == "Vowel":
 									feature = lookup_feat_id(con, "Diphthong")
 							else:
@@ -286,14 +306,6 @@ def insert_data(path: str | Path):
 						con.execute(query, data)
 				except sqlite3.IntegrityError as e:
 						print(f"!! IntegrityError: {e}")
-
-	# NOTE: Associate "ejective" ArticulationManner w/ the Ejective PhonemeFeature.
-	try:
-		with con:
-			query = """UPDATE PhonemeBank SET Feature = (SELECT ID FROM PhonemeFeature WHERE Name = "Ejective") WHERE Consonant_ArticulationManner LIKE "%ejective%";"""
-			con.execute(query)
-	except sqlite3.IntegrityError as e:
-			print(f"!! IntegrityError: {e}")
 
 	con.close()
 	print("Inserted data successfully!")
