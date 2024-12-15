@@ -46,6 +46,7 @@ def generate_ipa_bank(path: str | Path):
 						modifs = " ".join(p.modifiers)
 					else:
 						modifs = None
+					# FIXME: Use coarser features (split on - and keep the last element only?)
 					# Use the backness as the feature
 					feat = lookup_or_insert_feat(con, p.backness.title().replace("-", ""))
 					data = (str(p), "Vowel", p.height, p.backness, p.roundness, modifs, feat)
