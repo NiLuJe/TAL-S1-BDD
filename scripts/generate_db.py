@@ -229,8 +229,9 @@ def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 							if left_row["Type"] == right_row["Type"]:
 								type = left_row["Type"]
 								if type == "Consonant":
-									if nfd_phoneme[-2] == "t":
+									if nfd_phoneme[-2] == "t" or nfd_phoneme[-2] == "d":
 										# Assume Affricate
+										# NOTE: Shouldn't be necessary if the iput data uses the proper modern U+0361 ligature!
 										feature = lookup_feat_id(con, "Affricate")
 									else:
 										# Trust the leading consonant's feature (i.e., articulation manner)
