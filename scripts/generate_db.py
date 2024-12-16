@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-# See also: gruut-ipa, ipasymbols, and, most importantly: panphon
 import csv
+# See also: gruut-ipa, ipasymbols, and, most importantly: panphon
 import ipapy
 import os
 from pathlib import Path
