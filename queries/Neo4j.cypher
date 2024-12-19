@@ -32,7 +32,7 @@ SET
 	l.CaseCount = toInteger(row.CaseCount),
 	l.AdjectiveBeforeNoun = toBoolean(toInteger(row.AdjectiveBeforeNoun)),
 	l.AdjectiveAfterNoun = toBoolean(toInteger(row.AdjectiveAfterNoun)),
-	l.AdjectiveAgreement = toBoolean(toInteger(row.AdjectiveAgreement))
+	l.AdjectiveAgreement = toBoolean(toInteger(row.AdjectiveAgreement));
 
 // Lexicon
 CREATE CONSTRAINT Lexicon_Native_Word IF NOT EXISTS
@@ -67,7 +67,7 @@ LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/Prosody.csv
 MATCH (l:LangInfo {Name: row.LangID})
 SET
 	l.PhonemicStress = toBoolean(toInteger(row.PhonemicStress)),
-	l.SyllableWeightStress = toBoolean(toInteger(row.SyllableWeightStress))
+	l.SyllableWeightStress = toBoolean(toInteger(row.SyllableWeightStress));
 
 // Inspiration
 CREATE CONSTRAINT Inspiration_NaturalLanguage IF NOT EXISTS
@@ -104,7 +104,7 @@ CREATE CONSTRAINT PhonemeBank_IPA IF NOT EXISTS
 FOR (p:Phoneme) REQUIRE p.IPA IS UNIQUE;
 
 LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/PhonemeBank-Exported.csv" AS row
-MERGE (p:Phoneme {IPA: row.IPA, Type: row.Type, Modifiers: row.Modifiers})
+MERGE (p:Phoneme {IPA: row.IPA, Type: row.Type, Modifiers: coalesce(row.Modifiers, "N/A")});
 
 LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/PhonemeBank-Exported.csv" AS row
 MATCH (p:Phoneme {IPA: row.IPA})
@@ -118,14 +118,14 @@ MATCH (p:Phoneme {IPA: row.IPA, Type: "Vowel"})
 SET
 	p.Vowel_Height = row.Vowel_Height,
 	p.Vowel_Backness = row.Vowel_Backness,
-	p.Vowel_Roundness = row.Vowel_Roundness
+	p.Vowel_Roundness = row.Vowel_Roundness;
 
 LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/PhonemeBank-Exported.csv" AS row
-MATCH (p:Phoneme {IPA: row.IPA, Type: "Consonnant"})
+MATCH (p:Phoneme {IPA: row.IPA, Type: "Consonant"})
 SET
 	p.Consonant_Voicing = toBoolean(row.Consonant_Voicing),
 	p.Consonant_ArticulationManner = row.Consonant_ArticulationManner,
-	p.Consonant_ArticulationPlace = row.Consonant_ArticulationPlace
+	p.Consonant_ArticulationPlace = row.Consonant_ArticulationPlace;
 
 // Phonology
 LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/Phonology.csv" AS row
@@ -149,24 +149,34 @@ RETURN l, p, f;
 
 // Compare MorphoSyntax feats for Langs w/ Diphthongs
 MATCH (l:LangInfo)-[:HAS_PHONEME]->(p:Phoneme)-[:PHONEME_FEATURE]->(pf:PhonemeFeature {Name: "Diphthong"})
-RETURN l.WordOrder, p, l.CaseCount, p;
+RETURN l AS Lang, collect(p) as Phonemes, l.WordOrder, l.CaseCount;
+
+/* More readable, text-only variant */
+MATCH (l:LangInfo)-[:HAS_PHONEME]->(p:Phoneme)-[:PHONEME_FEATURE]->(pf:PhonemeFeature {Name: "Diphthong"})
+RETURN l.Name AS Lang, collect(p.IPA) as Phonemes, l.WordOrder, l.CaseCount;
 
 // Count Vowels
 MATCH (l:LangInfo)-[r:HAS_PHONEME]->(p:Phoneme {Type: "Vowel"})
 WITH l AS Lang, collect(p) as Phonemes, count(p) AS Vowels
 RETURN Lang, Phonemes, Vowels;
 
+/* More readable, text-only variant */
+MATCH (l:LangInfo)-[r:HAS_PHONEME]->(p:Phoneme {Type: "Vowel"})
+WITH l.Name AS Lang, count(p) AS Vowels
+RETURN Lang, Vowels;
+
 // Match shared phonemes
 MATCH (l1:LangInfo)-[r1:HAS_PHONEME]->(p:Phoneme)<-[r2:HAS_PHONEME]-(l2:LangInfo)
 RETURN l1, l2, p;
 
 // Lookup fire & co
-MATCH (w:EN_Word {Word: "fire"})<-[:IN_EN]-(n)<-[:HAS_WORD]-(l), (n)-[:IN_IPA]->(i)
-RETURN w, n, i, l;
-
 MATCH (w:EN_Word)<-[:IN_EN]-(n)<-[:HAS_WORD]-(l),
       (n)-[:IN_IPA]->(i)
 WHERE w.Word IN ["fire", "greetings"]
+RETURN w, n, i, l;
+
+/* Single word variant */
+MATCH (w:EN_Word {Word: "fire"})<-[:IN_EN]-(n)<-[:HAS_WORD]-(l), (n)-[:IN_IPA]->(i)
 RETURN w, n, i, l;
 
 // Match Phonemes w/ rels
