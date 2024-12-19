@@ -7,3 +7,5 @@ ID,LangID,NaturalLanguage,PhonologyFeature,ProsodyFeature,MorphoSyntaxFeature
 ,Quenya,Finnois,Any,,
 ,Sindarin,Gallois,Any,,
 ,Sindarin,Latin,,SyllableWeightStress,
+,Klingon,Langues amérindiennes,Velarized,,
+,Klingon,Langues sémitiques ,GlottalPlosive,,
