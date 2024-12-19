@@ -21,11 +21,12 @@ def main():
 def count_vowels_tx(tx):
 	result = tx.run("""
 		MATCH (l:LangInfo)-[r:HAS_PHONEME]->(p:Phoneme {Type: "Vowel"})
-		WITH l AS Lang, collect(p) as Phonemes, count(p) AS Vowels
-		RETURN Lang, Phonemes, Vowels;
+		WITH l.Name AS Lang, count(p) AS Vowels
+		RETURN Lang, Vowels
+		ORDER BY Vowels DESC;
 	""")
+	pp = pprint.PrettyPrinter(indent=4, sort_dicts=False)
 	for row in result:
-		pp = pprint.PrettyPrinter(indent=4, sort_dicts=False)
 		pp.pprint(row.data())
 
 if __name__ == "__main__":

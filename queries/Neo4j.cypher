@@ -163,7 +163,8 @@ RETURN Lang, Phonemes, Vowels;
 /* More readable, text-only variant */
 MATCH (l:LangInfo)-[r:HAS_PHONEME]->(p:Phoneme {Type: "Vowel"})
 WITH l.Name AS Lang, count(p) AS Vowels
-RETURN Lang, Vowels;
+RETURN Lang, Vowels
+ORDER BY Vowels DESC;
 
 // Match shared phonemes
 MATCH (l1:LangInfo)-[r1:HAS_PHONEME]->(p:Phoneme)<-[r2:HAS_PHONEME]-(l2:LangInfo)
