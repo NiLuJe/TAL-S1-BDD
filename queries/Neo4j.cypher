@@ -137,70 +137,30 @@ MERGE (nl)-[r:PHONOLOGY_FEATURE]->(phf)
 SET r.type = "Inspiration";
 
 // PhonemeBank
-// FIXME: Only keep Feature & IPA as a node, set everything else as a property
 CREATE CONSTRAINT PhonemeBank_IPA IF NOT EXISTS
 FOR (p:Phoneme) REQUIRE p.IPA IS UNIQUE;
-CREATE CONSTRAINT PhonemeBank_Type IF NOT EXISTS
-FOR (t:PhonemeType) REQUIRE t.Type IS UNIQUE;
-CREATE CONSTRAINT PhonemeBank_Vowel_Height IF NOT EXISTS
-FOR (vh:Vowel_Height) REQUIRE vh.Description IS UNIQUE;
-CREATE CONSTRAINT PhonemeBank_Vowel_Backness IF NOT EXISTS
-FOR (vb:Vowel_Backness) REQUIRE vb.Description IS UNIQUE;
-CREATE CONSTRAINT PhonemeBank_Vowel_Roundness IF NOT EXISTS
-FOR (vr:Vowel_Roundness) REQUIRE vr.Description IS UNIQUE;
-CREATE CONSTRAINT PhonemeBank_Consonant_Voicing IF NOT EXISTS
-FOR (cv:Consonant_Voicing) REQUIRE cv.Value IS UNIQUE;
-CREATE CONSTRAINT PhonemeBank_Consonant_ArticulationManner IF NOT EXISTS
-FOR (cam:Consonant_ArticulationManner) REQUIRE cam.Description IS UNIQUE;
-CREATE CONSTRAINT PhonemeBank_Consonant_ArticulationPlace IF NOT EXISTS
-FOR (cap:Consonant_ArticulationPlace) REQUIRE cap.Description IS UNIQUE;
-CREATE CONSTRAINT PhonemeBank_Modifiers IF NOT EXISTS
-FOR (m:Modifiers) REQUIRE m.Description IS UNIQUE;
 
 LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/PhonemeBank-Exported.csv" AS row
-MERGE (p:Phoneme {IPA: row.IPA})
-MERGE (t:PhonemeType {Type: row.Type})
-MERGE (vh:Vowel_Height {Description: COALESCE(row.Vowel_Height, "N/A")})
-MERGE (vb:Vowel_Backness {Description: COALESCE(row.Vowel_Backness, "N/A")})
-MERGE (vr:Vowel_Roundness {Description: COALESCE(row.Vowel_Roundness, "N/A")})
-MERGE (cv:Consonant_Voicing {Value: COALESCE(toBooleanOrNull(toInteger(row.Consonant_Voicing)), "N/A")})
-MERGE (cam:Consonant_ArticulationManner {Description: COALESCE(row.Consonant_ArticulationManner, "N/A")})
-MERGE (cap:Consonant_ArticulationPlace {Description: COALESCE(row.Consonant_ArticulationPlace, "N/A")})
-MERGE (m:Modifiers {Description: COALESCE(row.Modifiers, "N/A")})
+MERGE (p:Phoneme {IPA: row.IPA, Type: row.Type, Modifiers: row.Modifiers})
 
-WITH row, p, t, vh, vb, vr, cv, cam, cap, m
-MERGE (p)-[r:PHONEME_TYPE]->(t)
-SET r.type = "Phoneme"
-MERGE (p)-[r2:VOWEL_HEIGHT]->(vh)
-SET r2.type = "Phoneme"
-MERGE (p)-[r3:VOWEL_BACKNESS]->(vb)
-SET r3.type = "Phoneme"
-MERGE (p)-[r4:VOWEL_ROUNDNESS]->(vr)
-SET r4.type = "Phoneme"
-MERGE (p)-[r5:CONSONNANT_VOICING]->(cv)
-SET r5.type = "Phoneme"
-MERGE (p)-[r6:CONSONNANT_ARTICULATION_MANNER]->(cam)
-SET r6.type = "Phoneme"
-MERGE (p)-[r7:CONSONNANT_ARTICULATION_PLACE]->(cap)
-SET r7.type = "Phoneme"
-MERGE (p)-[r8:PHONEME_MODIFIERS]->(m)
-SET r8.type = "Phoneme";
-
-LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/PhonemeBank.csv" AS row
+LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/PhonemeBank-Exported.csv" AS row
 MATCH (p:Phoneme {IPA: row.IPA})
 MATCH (f:PhonemeFeature {Name: row.Feature})
 
 MERGE (p)-[r:PHONEME_FEATURE]->(f)
 SET r.type = "Phoneme";
 
-LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/PhonemeBank.csv" AS row
-MATCH (p:Phoneme {IPA: row.IPA})
-MATCH (t:PhonemeType {Type: row.Type})
-SET p.Type = t.Type;
+LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/PhonemeBank-Exported.csv" AS row
+MATCH (p:Phoneme {IPA: row.IPA, Type: "Vowel"})
+SET p.Vowel_Height = row.Vowel_Height
+SET p.Vowel_Backness = row.Vowel_Backness
+SET p.Vowel_Roundness = row.Vowel_Roundness
 
-# Or:
-#MATCH (p:Phoneme)-[:PHONEME_TYPE]->(pt:PhonemeType {Type: "Vowel"})
-#SET p.Type = pt.Type;
+LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/PhonemeBank-Exported.csv" AS row
+MATCH (p:Phoneme {IPA: row.IPA, Type: "Consonnant"})
+SET p.Consonant_Voicing = row.Consonant_Voicing
+SET p.Consonant_ArticulationManner = row.Consonant_ArticulationManner
+SET p.Consonant_ArticulationPlace = row.Consonant_ArticulationPlace
 
 // Phonology
 LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/Phonology.csv" AS row
@@ -230,10 +190,6 @@ MATCH (l)-[:CASE_COUNT]->(cc:CaseCount)
 RETURN l, p, wo, cc;
 
 // Count Vowels
-MATCH (l:LangInfo)-[r:HAS_PHONEME]->(p:Phoneme)-[:PHONEME_TYPE]->(pt:PhonemeType {Type: "Vowel"})
-WITH l AS Lang, collect(p) as Phonemes, count(p) AS Vowels
-RETURN Lang, Phonemes, Vowels;
-
 MATCH (l:LangInfo)-[r:HAS_PHONEME]->(p:Phoneme {Type: "Vowel"})
 WITH l AS Lang, collect(p) as Phonemes, count(p) AS Vowels
 RETURN Lang, Phonemes, Vowels;
