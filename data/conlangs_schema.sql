@@ -1,14 +1,5 @@
 PRAGMA foreign_keys = ON;
 
-CREATE TABLE Phonology (
-	ID INTEGER NOT NULL,
-	LangID INTEGER,
-	PhonemeID INTEGER,
-	CONSTRAINT Phonology_PK PRIMARY KEY (ID),
-	CONSTRAINT Phonology_LangInfo_FK FOREIGN KEY (LangID) REFERENCES LangInfo (LangID),
-	CONSTRAINT Phonology_PhonemeBank_FK FOREIGN KEY (PhonemeID) REFERENCES PhonemeBank (PhonemeID)
-);
-
 CREATE TABLE LangInfo (
 	LangID INTEGER NOT NULL,
 	LangName TEXT NOT NULL,
@@ -19,6 +10,37 @@ CREATE TABLE LangInfo (
 	Usage TEXT,
 	Description TEXT,
 	CONSTRAINT LangInfo_PK PRIMARY KEY (LangID)
+);
+
+CREATE TABLE PhonemeFeature (
+	ID INTEGER NOT NULL,
+	Name TEXT,
+	CONSTRAINT PhonemeFeature_PK PRIMARY KEY (ID)
+);
+
+CREATE TABLE PhonemeBank (
+	PhonemeID INTEGER NOT NULL,
+	IPA TEXT NOT NULL,
+	Type TEXT NOT NULL,
+	Vowel_Height TEXT,
+	Vowel_Backness TEXT,
+	Vowel_Roundness TEXT,
+	Consonant_Voicing INTEGER,
+	Consonant_ArticulationManner TEXT,
+	Consonant_ArticulationPlace TEXT,
+	Modifiers TEXT,
+	Feature INTEGER,
+	CONSTRAINT PhonemeBank_PK PRIMARY KEY (PhonemeID),
+	CONSTRAINT PhonemeBank_PhonemeFeature_FK FOREIGN KEY (Feature) REFERENCES PhonemeFeature (ID)
+);
+
+CREATE TABLE Phonology (
+	ID INTEGER NOT NULL,
+	LangID INTEGER,
+	PhonemeID INTEGER,
+	CONSTRAINT Phonology_PK PRIMARY KEY (ID),
+	CONSTRAINT Phonology_LangInfo_FK FOREIGN KEY (LangID) REFERENCES LangInfo (LangID),
+	CONSTRAINT Phonology_PhonemeBank_FK FOREIGN KEY (PhonemeID) REFERENCES PhonemeBank (PhonemeID)
 );
 
 CREATE TABLE Prosody (
@@ -54,12 +76,6 @@ CREATE TABLE MorphoSyntax (
 	CONSTRAINT MorphoSyntax_LangInfo_FK FOREIGN KEY (LangID) REFERENCES LangInfo (LangID)
 );
 
-CREATE TABLE PhonemeFeature (
-	ID INTEGER NOT NULL,
-	Name TEXT,
-	CONSTRAINT PhonemeFeature_PK PRIMARY KEY (ID)
-);
-
 CREATE TABLE Inspiration (
 	ID INTEGER NOT NULL,
 	LangID INTEGER,
@@ -70,22 +86,6 @@ CREATE TABLE Inspiration (
 	CONSTRAINT Inspiration_PK PRIMARY KEY (ID),
 	CONSTRAINT Inspiration_LangInfo_FK FOREIGN KEY (LangID) REFERENCES LangInfo (LangID),
 	CONSTRAINT Inspiration_PhonemeFeature_FK FOREIGN KEY (PhonologyFeature) REFERENCES PhonemeFeature (ID)
-);
-
-CREATE TABLE PhonemeBank (
-	PhonemeID INTEGER NOT NULL,
-	IPA TEXT NOT NULL,
-	Type TEXT NOT NULL,
-	Vowel_Height TEXT,
-	Vowel_Backness TEXT,
-	Vowel_Roundness TEXT,
-	Consonant_Voicing INTEGER,
-	Consonant_ArticulationManner TEXT,
-	Consonant_ArticulationPlace TEXT,
-	Modifiers TEXT,
-	Feature INTEGER,
-	CONSTRAINT PhonemeBank_PK PRIMARY KEY (PhonemeID),
-	CONSTRAINT PhonemeBank_PhonemeFeature_FK FOREIGN KEY (Feature) REFERENCES PhonemeFeature (ID)
 );
 
 CREATE UNIQUE INDEX Phonology_ID_IDX ON Phonology (ID);
