@@ -24,41 +24,15 @@ LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/PhonemeFeat
 MERGE (f:PhonemeFeature {Name: row.Name});
 
 // MorphoSyntax
-CREATE CONSTRAINT MorphoSyntax_WordOrder IF NOT EXISTS
-FOR (wo:WordOrder) REQUIRE wo.Order IS UNIQUE;
-CREATE CONSTRAINT MorphoSyntax_PluralCount IF NOT EXISTS
-FOR (pc:PluralCount) REQUIRE pc.Count IS UNIQUE;
-CREATE CONSTRAINT MorphoSyntax_CaseCount IF NOT EXISTS
-FOR (cc:CaseCount) REQUIRE cc.Count IS UNIQUE;
-CREATE CONSTRAINT MorphoSyntax_AdjectiveBeforeNoun IF NOT EXISTS
-FOR (abn:AdjectiveBeforeNoun) REQUIRE abn.Value IS UNIQUE;
-CREATE CONSTRAINT MorphoSyntax_AdjectiveAfterNoun IF NOT EXISTS
-FOR (aan:AdjectiveAfterNoun) REQUIRE aan.Value IS UNIQUE;
-CREATE CONSTRAINT MorphoSyntax_AdjectiveAgreement IF NOT EXISTS
-FOR (aa:AdjectiveAgreement) REQUIRE aa.Value IS UNIQUE;
-
 LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/MorphoSyntax.csv" AS row
-MERGE (wo:WordOrder {Order: row.WordOrder})
-MERGE (pc:PluralCount {Count: toInteger(row.PluralCount)})
-MERGE (cc:CaseCount {Count: toInteger(row.CaseCount)})
-MERGE (abn:AdjectiveBeforeNoun {Value: toBoolean(toInteger(row.AdjectiveBeforeNoun))})
-MERGE (aan:AdjectiveAfterNoun {Value: toBoolean(toInteger(row.AdjectiveAfterNoun))})
-MERGE (aa:AdjectiveAgreement {Value: toBoolean(toInteger(row.AdjectiveAgreement))})
-WITH row, wo, pc, cc, abn, aan, aa
 MATCH (l:LangInfo {Name: row.LangID})
-
-MERGE (l)-[r:WORD_ORDER]->(wo)
-SET r.type = "MorphoSyntax"
-MERGE (l)-[r2:PLURAL_COUNT]->(pc)
-SET r2.type = "MorphoSyntax"
-MERGE (l)-[r3:CASE_COUNT]->(cc)
-SET r3.type = "MorphoSyntax"
-MERGE (l)-[r4:ADJ_BEFORE_NOUN]->(abn)
-SET r4.type = "MorphoSyntax"
-MERGE (l)-[r5:ADJ_AFTER_NOUN]->(aan)
-SET r5.type = "MorphoSyntax"
-MERGE (l)-[r6:ADJ_AGREEMENT]->(aa)
-SET r6.type = "MorphoSyntax";
+SET
+	l.WordOrder = row.WordOrder,
+	l.PluralCount = toInteger(row.PluralCount),
+	l.CaseCount = toInteger(row.CaseCount),
+	l.AdjectiveBeforeNoun = toBoolean(toInteger(row.AdjectiveBeforeNoun)),
+	l.AdjectiveAfterNoun = toBoolean(toInteger(row.AdjectiveAfterNoun)),
+	l.AdjectiveAgreement = toBoolean(toInteger(row.AdjectiveAgreement))
 
 // Lexicon
 CREATE CONSTRAINT Lexicon_Native_Word IF NOT EXISTS
@@ -177,8 +151,7 @@ SET r.type = "Phonology";
 */
 
 // Phonemes used in SVO Langs:
-MATCH (l:LangInfo)-[:HAS_PHONEME]->(p:Phoneme),
-      (l)-[:WORD_ORDER]->(wo:WordOrder {Order: "SVO"})
+MATCH (l:LangInfo {WordOrder: "SVO"})-[:HAS_PHONEME]->(p:Phoneme)
 RETURN l, p;
 
 // Phoneme Features comparison
@@ -187,9 +160,7 @@ RETURN l, p, f;
 
 // Compare MorphoSyntax feats for Langs w/ Diphthongs
 MATCH (l:LangInfo)-[:HAS_PHONEME]->(p:Phoneme)-[:PHONEME_FEATURE]->(pf:PhonemeFeature {Name: "Diphthong"})
-MATCH (l)-[:WORD_ORDER]->(wo:WordOrder)
-MATCH (l)-[:CASE_COUNT]->(cc:CaseCount)
-RETURN l, p, wo, cc;
+RETURN l.WordOrder, p, l.CaseCount, p;
 
 // Count Vowels
 MATCH (l:LangInfo)-[r:HAS_PHONEME]->(p:Phoneme {Type: "Vowel"})
