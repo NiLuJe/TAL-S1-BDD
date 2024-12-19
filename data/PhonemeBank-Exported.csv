@@ -310,12 +310,12 @@ PhonemeID,IPA,Type,Vowel_Height,Vowel_Backness,Vowel_Roundness,Consonant_Voicing
 309,"",Diacritic,,,,,,,nasal-release,NasalRelease
 310,"ˡ",Diacritic,,,,,,,lateral-release,LateralRelease
 311,"̚",Diacritic,,,,,,,no-audible-release,NoAudibleRelease
-312,"ʱ",Diacritic,,,,,,,"voiced glottal fricative","Voiced Glottal Fricative"
-313,"ʳ",Diacritic,,,,,,,"alveolar trill","Alveolar Trill"
-314,"ʴ",Diacritic,,,,,,,"alveolar approximant","Alveolar Approximant"
-315,"ʵ",Diacritic,,,,,,,"retroflex approximant","Retroflex Approximant"
-316,"ʶ",Diacritic,,,,,,,"uvular approximant","Uvular Approximant"
-317,"ˀ",Diacritic,,,,,,,"glottal plosive","Glottal Plosive"
+312,"ʱ",Diacritic,,,,,,,"voiced glottal fricative",VoicedGlottalFricative
+313,"ʳ",Diacritic,,,,,,,"alveolar trill",AlveolarTrill
+314,"ʴ",Diacritic,,,,,,,"alveolar approximant",AlveolarApproximant
+315,"ʵ",Diacritic,,,,,,,"retroflex approximant",RetroflexApproximant
+316,"ʶ",Diacritic,,,,,,,"uvular approximant",UvularApproximant
+317,"ˀ",Diacritic,,,,,,,"glottal plosive",GlottalPlosive
 318,"̢",Diacritic,,,,,,,retroflex,Retroflex
 319,"˚",Diacritic,,,,,,,unexploded,Unexploded
 320,"ˈ",Suprasegmental,,,,,,,primary-stress,PrimaryStress
@@ -345,30 +345,32 @@ PhonemeID,IPA,Type,Vowel_Height,Vowel_Backness,Vowel_Roundness,Consonant_Voicing
 344,"᷆",Tone,,,,,,,mid-low-falling-contour,MidLowFallingContour
 345,"᷇",Tone,,,,,,,high-mid-falling-contour,HighMidFallingContour
 346,"᷉",Tone,,,,,,,falling-rising-contour,FallingRisingContour
-347,aw,Vowel,,,,,,,,Diphthong
-348,"εw",Vowel,,,,,,,,Diphthong
-349,aj,Vowel,,,,,,,,Diphthong
-350,"εj",Vowel,,,,,,,,Diphthong
+347,"aʊ",Vowel,,,,,,,,Diphthong
+348,"εʊ",Vowel,,,,,,,,Diphthong
+349,"aɪ",Vowel,,,,,,,,Diphthong
+350,"εɪ",Vowel,,,,,,,,Diphthong
 351,"l̩",Consonant,,,,,,,syllabic,Syllabic
 352,"r̩",Consonant,,,,,,,syllabic,Syllabic
-353,ts,Consonant,,,,,,,,Affricate
-354,"xː",Consonant,,,,,,,long,Long
-355,"θː",Consonant,,,,,,,long,Long
-356,"ʃː",Consonant,,,,,,,long,Long
-357,"ʒː",Consonant,,,,,,,long,Long
-358,"iː",Vowel,,,,,,,long,Long
-359,"uː",Vowel,,,,,,,long,Long
-360,"eː",Vowel,,,,,,,long,Long
-361,"oː",Vowel,,,,,,,long,Long
-362,"aː",Vowel,,,,,,,long,Long
-363,ju,Vowel,,,,,,,,Diphthong
-364,ew,Vowel,,,,,,,,Diphthong
-365,oj,Vowel,,,,,,,,Diphthong
-366,uj,Vowel,,,,,,,,Diphthong
-367,"yː",Vowel,,,,,,,long,Long
-368,"ɛː",Vowel,,,,,,,long,Long
-369,"ɔː",Vowel,,,,,,,long,Long
-370,"ʊj",Vowel,,,,,,,,Diphthong
-371,"ɛj",Vowel,,,,,,,,Diphthong
-372,"ɔɛ",Vowel,,,,,,,,Diphthong
-373,"aɛ",Vowel,,,,,,,,Diphthong
+353,"xː",Consonant,,,,,,,long,Long
+354,"θː",Consonant,,,,,,,long,Long
+355,"ʃː",Consonant,,,,,,,long,Long
+356,"ʒː",Consonant,,,,,,,long,Long
+357,"iː",Vowel,,,,,,,long,Long
+358,"uː",Vowel,,,,,,,long,Long
+359,"eː",Vowel,,,,,,,long,Long
+360,"oː",Vowel,,,,,,,long,Long
+361,"aː",Vowel,,,,,,,long,Long
+362,"iʊ",Vowel,,,,,,,,Diphthong
+363,"eʊ",Vowel,,,,,,,,Diphthong
+364,"oɪ",Vowel,,,,,,,,Diphthong
+365,"uɪ",Vowel,,,,,,,,Diphthong
+366,"yː",Vowel,,,,,,,long,Long
+367,"ɛː",Vowel,,,,,,,long,Long
+368,"ɔː",Vowel,,,,,,,long,Long
+369,"ʊɪ",Vowel,,,,,,,,Diphthong
+370,"ɛɪ",Vowel,,,,,,,,Diphthong
+371,"ɔɛ",Vowel,,,,,,,,Diphthong
+372,"aɛ",Vowel,,,,,,,,Diphthong
+373,"pʰ",Consonant,,,,,,,aspirated,Aspirated
+374,"qʰ",Consonant,,,,,,,aspirated,Aspirated
+375,"tʰ",Consonant,,,,,,,aspirated,Aspirated
