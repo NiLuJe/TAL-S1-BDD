@@ -4,6 +4,7 @@ import csv
 # See also: gruut-ipa, ipasymbols, and, most importantly: panphon
 import ipapy
 import os
+import pprint
 from pathlib import Path
 import sqlite3
 import unicodedata
@@ -13,6 +14,9 @@ BASE_DIR = Path(__file__).parent.parent.resolve()
 DB_PATH = Path(BASE_DIR / "DB" / "conlangs.db")
 DATA_PATH = Path(BASE_DIR / "data")
 SCHEMA_PATH = Path(DATA_PATH / "conlangs_schema.sql")
+
+# Our pretty printer instance
+pp = pprint.PrettyPrinter(indent=4, sort_dicts=False)
 
 # Keep a cache of foreign key mappings
 MAP_LANGS = {}
@@ -49,7 +53,7 @@ def generate_ipa_bank(path: str | Path):
 					# Use the backness as the feature
 					feat = lookup_or_insert_feat(con, p.backness.title().replace("-", ""))
 					data = (str(p), "Vowel", p.height, p.backness, p.roundness, modifs, feat)
-					print(data)
+					pp.pprint(data)
 					con.execute("INSERT INTO PhonemeBank(IPA, Type, Vowel_Height, Vowel_Backness, Vowel_Roundness, Modifiers, Feature) VALUES(?, ?, ?, ?, ?, ?, ?)", data)
 				elif p.is_consonant:
 					if p.modifiers:
@@ -66,28 +70,28 @@ def generate_ipa_bank(path: str | Path):
 					except ValueError:
 						feat = lookup_or_insert_feat(con, manners[-1].title())
 					data = (str(p), "Consonant", 1 if p.voicing == "voiced" else 0, p.manner, p.place, modifs, feat)
-					print(data)
+					pp.pprint(data)
 					con.execute("INSERT INTO PhonemeBank(IPA, Type, Consonant_Voicing, Consonant_ArticulationManner, Consonant_ArticulationPlace, Modifiers, Feature) VALUES(?, ?, ?, ?, ?, ?, ?)", data)
 				elif p.is_diacritic:
 					modifs = p.name.replace(" diacritic", "")
 					# Use the modifiers as the feature
 					feat = lookup_or_insert_feat(con, modifs.title().replace("-", ""))
 					data = (str(p), "Diacritic", modifs, feat)
-					print(data)
+					pp.pprint(data)
 					con.execute("INSERT INTO PhonemeBank(IPA, Type, Modifiers, Feature) VALUES(?, ?, ?, ?)", data)
 				elif p.is_suprasegmental:
 					modifs = p.name.replace(" suprasegmental", "")
 					# Use the modifiers as the feature
 					feat = lookup_or_insert_feat(con, modifs.title().replace("-", ""))
 					data = (str(p), "Suprasegmental", modifs, feat)
-					print(data)
+					pp.pprint(data)
 					con.execute("INSERT INTO PhonemeBank(IPA, Type, Modifiers, Feature) VALUES(?, ?, ?, ?)", data)
 				elif p.is_tone:
 					modifs = p.name.replace(" tone", "")
 					# Use the modifiers as the feature
 					feat = lookup_or_insert_feat(con, modifs.title().replace("-", ""))
 					data = (str(p), "Tone", modifs, feat)
-					print(data)
+					pp.pprint(data)
 					con.execute("INSERT INTO PhonemeBank(IPA, Type, Modifiers, Feature) VALUES(?, ?, ?, ?)", data)
 	except sqlite3.IntegrityError as e:
 			print(f"!! IntegrityError: {e}")
@@ -142,7 +146,7 @@ def lookup_feat_id(con: sqlite3.Connection, feature_name: str) -> int | None:
 			else:
 				feature_id = None
 			# Log it
-			print(feature_id )
+			print(feature_id)
 			# Cache it
 			MAP_FEATURES[feature_name] = feature_id
 			return feature_id
@@ -206,7 +210,7 @@ def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 					row = res.fetchone()
 					if row:
 						right_row = dict(row)
-						print(f"right_row: {right_row}")
+						pp.pprint(right_row)
 
 						phone = nfd_phoneme[-2]
 						data = (phone, )
@@ -215,7 +219,7 @@ def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 						row = res.fetchone()
 						if row:
 							left_row = dict(row)
-							print(f"left_row: {left_row}")
+							pp.pprint(left_row)
 
 					# Crappy heuristics...
 					match right_row["Type"]:
@@ -243,7 +247,8 @@ def lookup_phoneme_id(con: sqlite3.Connection, phoneme: str) -> int:
 								feature = lookup_feat_id(con, "Diphthong")
 
 				data = (phoneme, type, modifier, feature)
-				print(f"Inserting new phoneme into PhonemeBank: {data}")
+				print("Inserting new phoneme into PhonemeBank:")
+				pp.pprint(data)
 				con.execute("INSERT INTO PhonemeBank(IPA, Type, Modifiers, Feature) VALUES(?, ?, ?, ?)", data)
 
 				data = (phoneme, )
@@ -334,7 +339,7 @@ def insert_data(path: str | Path):
 				data = tuple(row.values())
 				# Print the query for debugging purposes...
 				print(query)
-				print(data)
+				pp.pprint(data)
 
 				try:
 					with con:
