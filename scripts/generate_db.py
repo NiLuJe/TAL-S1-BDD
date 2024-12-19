@@ -75,7 +75,7 @@ def generate_ipa_bank(path: str | Path):
 				elif p.is_diacritic:
 					modifs = p.name.replace(" diacritic", "")
 					# Use the modifiers as the feature
-					feat = lookup_or_insert_feat(con, modifs.title().replace("-", ""))
+					feat = lookup_or_insert_feat(con, modifs.title().replace("-", "").replace(" ", ""))
 					data = (str(p), "Diacritic", modifs, feat)
 					pp.pprint(data)
 					con.execute("INSERT INTO PhonemeBank(IPA, Type, Modifiers, Feature) VALUES(?, ?, ?, ?)", data)
