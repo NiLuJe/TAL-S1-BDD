@@ -9,3 +9,6 @@ ID,LangID,NaturalLanguage,PhonologyFeature,ProsodyFeature,MorphoSyntaxFeature
 ,Sindarin,Latin,,SyllableWeightStress,
 ,Klingon,Langues amérindiennes,Velarized,,
 ,Klingon,Langues sémitiques ,GlottalPlosive,,
+,Valyrian,Latin,,,CaseCount
+,Valyrian,Grec Ancien,Any,,
+,Valyrian,"Langues dravidiennes (e.g., Tamoul) ",,SyllableWeightStress,

@@ -4,3 +4,4 @@ LangID,LangName,Creator,World,Spoken,Written,Usage,Description
 ,Quenya,J.R.R. Tolkien,Middle-Earth (LotR),1,1,"Cérémonial, Littérature, Noblesse","Langue des Elfes, utilisé de manière cérémoniale"
 ,Sindarin,J.R.R. Tolkien,Middle-Earth (LotR),1,1,"Lingua-franca (commerce, commun)","Langue des Elfes, courant"
 ,Klingon,Marc Okrand,Star Trek,1,1,Utilisé par les Klingons pour les interactions entre clans et dans les conseils d'honneur,"Language pour la guerre, les cérémonies, la littérature épique dans l’univers interstellaire"
+,Valyrian,David J. Peterson,Game of Thrones,1,1,"Diplomatie, élites, rituels religieux","Langue noble et érudite, flexionnelle"

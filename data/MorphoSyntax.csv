@@ -4,3 +4,4 @@ ID,LangID,WordOrder,PluralCount,CaseCount,AdjectiveBeforeNoun,AdjectiveAfterNoun
 ,Quenya,SVO,3,10,1,1,0
 ,Sindarin,SVO,2,0,0,1,1
 ,Klingon,OSV,0,0,0,0,0
+,Valyrian,SVO,2,8,0,1,1
