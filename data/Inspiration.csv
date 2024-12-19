@@ -11,4 +11,4 @@ ID,LangID,NaturalLanguage,PhonologyFeature,ProsodyFeature,MorphoSyntaxFeature
 ,Klingon,Langues sémitiques ,GlottalPlosive,,
 ,Valyrian,Latin,,,CaseCount
 ,Valyrian,Grec Ancien,Any,,
-,Valyrian,"Langues dravidiennes (e.g., Tamoul) ",,SyllableWeightStress,
+,Valyrian,"Langues dravidiennes (e.g., Tamoul)",,SyllableWeightStress,
