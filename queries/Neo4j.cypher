@@ -153,7 +153,8 @@ RETURN l AS Lang, collect(p) as Phonemes, l.WordOrder, l.CaseCount;
 
 /* More readable, text-only variant */
 MATCH (l:LangInfo)-[:HAS_PHONEME]->(p:Phoneme)-[:PHONEME_FEATURE]->(pf:PhonemeFeature {Name: "Diphthong"})
-RETURN l.Name AS Lang, collect(p.IPA) as Phonemes, l.WordOrder, l.CaseCount;
+RETURN l.Name AS Lang, collect(p.IPA) as Phonemes, l.WordOrder AS WordOrder, l.CaseCount AS CaseCount
+ORDER BY WordOrder, CaseCount DESC;
 
 // Count Vowels
 MATCH (l:LangInfo)-[r:HAS_PHONEME]->(p:Phoneme {Type: "Vowel"})
