@@ -152,15 +152,17 @@ SET r.type = "Phoneme";
 
 LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/PhonemeBank-Exported.csv" AS row
 MATCH (p:Phoneme {IPA: row.IPA, Type: "Vowel"})
-SET p.Vowel_Height = row.Vowel_Height
-SET p.Vowel_Backness = row.Vowel_Backness
-SET p.Vowel_Roundness = row.Vowel_Roundness
+SET
+	p.Vowel_Height = row.Vowel_Height,
+	p.Vowel_Backness = row.Vowel_Backness,
+	p.Vowel_Roundness = row.Vowel_Roundness
 
 LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/PhonemeBank-Exported.csv" AS row
 MATCH (p:Phoneme {IPA: row.IPA, Type: "Consonnant"})
-SET p.Consonant_Voicing = row.Consonant_Voicing
-SET p.Consonant_ArticulationManner = row.Consonant_ArticulationManner
-SET p.Consonant_ArticulationPlace = row.Consonant_ArticulationPlace
+SET
+	p.Consonant_Voicing = toBoolean(row.Consonant_Voicing),
+	p.Consonant_ArticulationManner = row.Consonant_ArticulationManner,
+	p.Consonant_ArticulationPlace = row.Consonant_ArticulationPlace
 
 // Phonology
 LOAD CSV WITH HEADERS FROM "file:///Users/niluje/Dev/TAL-S1-BDD/data/Phonology.csv" AS row
