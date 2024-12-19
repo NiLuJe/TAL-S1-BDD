@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import pprint
 import os
 from neo4j import GraphDatabase
 
@@ -24,7 +25,8 @@ def count_vowels_tx(tx):
 		RETURN Lang, Phonemes, Vowels;
 	""")
 	for row in result:
-		print(row.data())
+		pp = pprint.PrettyPrinter(indent=4, sort_dicts=False)
+		pp.pprint(row.data())
 
 if __name__ == "__main__":
 	main()
