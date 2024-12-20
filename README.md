@@ -9,6 +9,10 @@ Oumaya Chelbi, Mickaela Mastrodicasa, Damien Biguet
 
 BDD SQL
 
+- `data/conlangs_schema.sql`
+
+Schéma SQL
+
 - `data/Schéma.ods`
 
 Tableau source des données
