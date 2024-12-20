@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Extract the full PhoenemeBank & PhonemeFeature tables for the Neo4j import.
+
 # Lookup Feature
 QUERY="
 SELECT
